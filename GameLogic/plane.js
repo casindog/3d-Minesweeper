@@ -1,19 +1,17 @@
 const Point = require('./point');
 
 class Plane {
-    // for now, lets assume 8x8 w/ 10 mines each
+    // assume 4x4 w/ 4 mines for dev
     constructor(planeRow=4, planeCol=4, mines=4) {
         this.planeRow = planeRow;
         this.planeCol = planeCol;
         this.planeMines = mines;
-        this.minesArray = this.generateMines(this.planeCol * this.planeRow, this.planeMines);
-        this.planeGrid = this.createGrid(this.planeRow, this.planeCol, this.minesArray);
+        this.planeGrid = this.createGrid();
 
-        this.render();
+        // this.render();
     }
 
-    // create arr of total points on plane
-        generateMines(totalPoints, mines) {
+    generateMines(totalPoints, mines) {
         let arr = new Array(totalPoints);
 
         // generate mine values on plane
@@ -52,10 +50,12 @@ class Plane {
             grid[i] = new Array(this.planeCol);
         }
 
+        let minesArray = this.generateMines(this.planeCol * this.planeRow, this.planeMines);
+
         let i = 0;
         for (let row = 0; row < this.planeRow; row++) {
             for (let col = 0; col < this.planeCol; col++) {
-                grid[row][col] = new Point(row, col, this.minesArray[i])
+                grid[row][col] = new Point(row, col, minesArray[i])
                 i++
             }
         }
@@ -63,154 +63,283 @@ class Plane {
         return grid
     }
 
-    displayNeighbors(row, col) {
-        console.log(this.planeGrid[row][col].neighbors)
-    }
+    // displayNeighbors(row, col) {
+    //     console.log(this.planeGrid[row][col].neighbors)
+    // }
 
-    setNeighbors() {
-        for (let row = 0; row < this.planeRow; row++) {
-            for (let col = 0; col < this.planeCol; col++) {
-                
-                console.log(`RC: ${row}, ${col}`)
-                let neighbors;
-                if (this.setCornerNeighbors(row,col)) {
-                    // this seems redundant
-                    this.setCornerNeighbors(row, col);
-                } elseif (this.setBorderNeighbors(row, col)) {
-                    (row===0 && !(col === 0 || col === this.planeCol-1)) {
-                        // top border
-                        neighbors = {
-                            "top": null,
-                            "top-right": null,
-                            "right": this.planeGrid[row][col + 1],
-                            "bottom-right": this.planeGrid[row + 1][col + 1],
-                            "bottom": this.planeGrid[row + 1][col],
-                            "bottom-left": this.planeGrid[row+1][col-1],
-                            "left": this.planeGrid[row][col - 1],
-                            "top-left": null
-                        }
-                    } else if (col===this.planeCol-1 && !(row===0 || row===this.planeRow-1)) {
-                        // right border
-                        neighbors = {
-                            "top": this.planeGrid[row - 1][col],
-                            "top-right": this.planeGrid[row - 1][col + 1],
-                            "right": this.planeGrid[row][col + 1],
-                            "bottom-right": this.planeGrid[row + 1][col + 1],
-                            "bottom": this.planeGrid[row + 1][col],
-                            "bottom-left": null,
-                            "left": null,
-                            "top-left": null
-                        }
-                    } else if (row===this.planeRow-1 && !(col===0 || col===this.planeCol-1)) {
-                        // bottom border
-                        neighbors = {
-                            "top": this.planeGrid[row - 1][col],
-                            "top-right": this.planeGrid[row-1][col+1],
-                            "right": this.planeGrid[row][col+1],
-                            "bottom-right": null,
-                            "bottom": null,
-                            "bottom-left": null,
-                            "left": this.planeGrid[row][col - 1],
-                            "top-left": this.planeGrid[row - 1][col - 1]
-                        }
-                    } else if (col===0 && !(row===0 || row===this.planeRow-1)) {
-                        // left border
-                        neighbors = {
-                            "top": this.planeGrid[row - 1][col],
-                            "top-right": this.planeGrid[row-1][col+1],
-                            "right": this.planeGrid[row][col+1],
-                            "bottom-right": this.planeGrid[row+1][col+1],
-                            "bottom": this.planeGrid[row + 1][col],
-                            "bottom-left": null,
-                            "left": null,
-                            "top-left": null
-                        }
-                    }
+    // setNeighbors(planeIdx, lastPlaneIdx) {
 
-                // every other point
-                } else {
-                    "top": this.planeGrid[row - 1][col],
-                    neighbors = {
-                        "top-right": this.planeGrid[row - 1][col + 1],
-                        "right": this.planeGrid[row][col + 1],
-                        "bottom-right": this.planeGrid[row + 1][col + 1],
-                        "bottom": this.planeGrid[row + 1][col],
-                        "bottom-left": this.planeGrid[row + 1][col - 1],
-                        "left": this.planeGrid[row][col - 1],
-                        "top-left": this.planeGrid[row - 1][col - 1]
-                    }
-                }
-                
-                this.planeGrid[row][col].neighbors = neighbors;
-            }
-        }
-    }
+    //     if (planeIdx===0) {
 
-    setCornerNeighbors(row, col) {
-        if (row === 0 && col === 0) {
-            // top left corner
-            return neighbors = {
-                "top": null,
-                "top-right": null,
-                "right": this.planeGrid[row][col + 1],
-                "bottom-right": this.planeGrid[row + 1][col + 1],
-                "bottom": this.planeGrid[row + 1][col],
-                "bottom-left": null,
-                "left": null,
-                "top-left": null
-            }
-        } else if (row === 0 && col === this.planeCol - 1) {
-            // top right corner
-            return neighbors = {
-                "top": null,
-                "top-right": null,
-                "right": null,
-                "bottom-right": null,
-                "bottom": this.planeGrid[row + 1][col],
-                "bottom-left": this.planeGrid[row + 1][col - 1],
-                "left": this.planeGrid[row][col - 1],
-                "top-left": null
-            }
-        } else if (row === this.planeRow - 1 && col === this.planeCol - 1) {
-            // bottom right corner
-            return neighbors = {
-                "top": this.planeGrid[row - 1][col],
-                "top-right": null,
-                "right": null,
-                "bottom-right": null,
-                "bottom": null,
-                "bottom-left": null,
-                "left": this.planeGrid[row][col - 1],
-                "top-left": this.planeGrid[row - 1][col - 1]
-            }
-        } else if (row === this.planeRow - 1 && col === 0) {
-            // bottom left corner
-            return neighbors = {
-                "top": this.planeGrid[row - 1][col],
-                "top-right": this.planeGrid[row - 1][col + 1],
-                "right": this.planeGrid[row][col + 1],
-                "bottom-right": null,
-                "bottom": null,
-                "bottom-left": null,
-                "left": null,
-                "top-left": null
-            }
-        }
+    //         for (let row = 0; row < this.planeRow; row++) {
+    //             for (let col = 0; col < this.planeCol; col++) {
+                    
+    //                 // console.log(`RC: ${row}, ${col}`)
+    //                 let neighbors;
+    //                 if (this.setCornerNeighbors(row, col)) {
+    //                     neighbors = this.setCornerNeighbors(row, col);
+    //                 } else if (this.setBorderNeighbors(row, col)) {
+    //                     neighbors = this.setBorderNeighbors(row, col);
+    //                 } else {
+    //                     // every other point
+    //                     neighbors = { 
+    //                         upPlane: {
+    //                             "up": null,
+    //                             "N": null, 
+    //                             "NE": null, 
+    //                             "E": null, 
+    //                             "SE": null, 
+    //                             "S": null, 
+    //                             "SW": null, 
+    //                             "W": null, 
+    //                             "NW": null 
+    //                         },
+    //                         samePlane: {
+    //                             "N": this.planeGrid[row - 1][col],
+    //                             "NE": this.planeGrid[row - 1][col + 1],
+    //                             "E": this.planeGrid[row][col + 1],
+    //                             "SE": this.planeGrid[row + 1][col + 1],
+    //                             "S": this.planeGrid[row + 1][col],
+    //                             "SW": this.planeGrid[row + 1][col - 1],
+    //                             "W": this.planeGrid[row][col - 1],
+    //                             "NW": this.planeGrid[row - 1][col - 1]
+    //                         },
+    //                         downPlane: {
+    //                             "down": g.planes[planeIdx+1].planeGrid[rol][col],
+    //                             "N": g.planes[planeIdx+1].planeGrid[row - 1][col],
+    //                             "NE": g.planes[planeIdx+1].planeGrid[row - 1][col + 1],
+    //                             "E": g.planes[planeIdx+1].planeGrid[row][col + 1],
+    //                             "SE": g.planes[planeIdx+1].planeGrid[row + 1][col + 1],
+    //                             "S": g.planes[planeIdx+1].planeGrid[row + 1][col],
+    //                             "SW": g.planes[planeIdx+1].planeGrid[row + 1][col - 1],
+    //                             "W": g.planes[planeIdx+1].planeGrid[row][col - 1],
+    //                             "NW": g.planes[planeIdx+1].planeGrid[row - 1][col - 1]
+    //                         }
+    //                     }
+    //                 }
+                    
+    //                 this.planeGrid[row][col].neighbors = neighbors;
+    //             }
+    //         }
 
-        return false
-    }
+    //     } else if (planeIdx === lastPlaneIdx) {
 
-    setBorderNeighbors(row, col) {
-        // borders but not corners
+    //         for (let row = 0; row < this.planeRow; row++) {
+    //             for (let col = 0; col < this.planeCol; col++) {
 
-        if (row === 0 || row === this.planeRow-1 || 
-            col === 0 || col === this.planeCol-1)  {
+    //                 // console.log(`RC: ${row}, ${col}`)
+    //                 let neighbors;
+    //                 if (this.setCornerNeighbors(row, col)) {
+    //                     neighbors = this.setCornerNeighbors(row, col);
+    //                 } else if (this.setBorderNeighbors(row, col)) {
+    //                     neighbors = this.setBorderNeighbors(row, col);
+    //                 } else {
+    //                     // every other point
+    //                     neighbors = {
+    //                         upPlane: {
+    //                             "up": this.plane[rol][col],
+    //                             "N": this.planeGrid[row - 1][col],
+    //                             "NE": this.planeGrid[row - 1][col + 1],
+    //                             "E": this.planeGrid[row][col + 1],
+    //                             "SE": this.planeGrid[row + 1][col + 1],
+    //                             "S": this.planeGrid[row + 1][col],
+    //                             "SW": this.planeGrid[row + 1][col - 1],
+    //                             "W": this.planeGrid[row][col - 1],
+    //                             "NW": this.planeGrid[row - 1][col - 1]
+    //                         },
+    //                         samePlane: {
+    //                             "N": this.planeGrid[row - 1][col],
+    //                             "NE": this.planeGrid[row - 1][col + 1],
+    //                             "E": this.planeGrid[row][col + 1],
+    //                             "SE": this.planeGrid[row + 1][col + 1],
+    //                             "S": this.planeGrid[row + 1][col],
+    //                             "SW": this.planeGrid[row + 1][col - 1],
+    //                             "W": this.planeGrid[row][col - 1],
+    //                             "NW": this.planeGrid[row - 1][col - 1]
+    //                         },
+    //                         downPlane: {
+    //                             "down": null, 
+    //                             "N": null, 
+    //                             "NE": null, 
+    //                             "E": null, 
+    //                             "SE": null, 
+    //                             "S": null, 
+    //                             "SW": null, 
+    //                             "W": null, 
+    //                             "NW": null 
+    //                         }
+    //                     }
+    //                 }
 
-            return true;
-        } else {
-            return false;
-        }
-    }
+    //                 this.planeGrid[row][col].neighbors = neighbors;    
+    //             }
+    //         }
+
+    //     } else {
+
+    //         for (let row = 0; row < this.planeRow; row++) {
+    //             for (let col = 0; col < this.planeCol; col++) {
+
+    //                 // console.log(`RC: ${row}, ${col}`)
+    //                 let neighbors;
+    //                 if (this.setCornerNeighbors(row, col)) {
+    //                     neighbors = this.setCornerNeighbors(row, col);
+    //                 } else if (this.setBorderNeighbors(row, col)) {
+    //                     neighbors = this.setBorderNeighbors(row, col);
+    //                 } else {
+    //                     // every other point
+    //                     neighbors = {
+    //                         upPlane: {
+    //                             "up": null,
+    //                             "N": null,
+    //                             "NE": null,
+    //                             "E": null,
+    //                             "SE": null,
+    //                             "S": null,
+    //                             "SW": null,
+    //                             "W": null,
+    //                             "NW": null
+    //                         },
+    //                         samePlane: {
+    //                             "N": this.planeGrid[row - 1][col],
+    //                             "NE": this.planeGrid[row - 1][col + 1],
+    //                             "E": this.planeGrid[row][col + 1],
+    //                             "SE": this.planeGrid[row + 1][col + 1],
+    //                             "S": this.planeGrid[row + 1][col],
+    //                             "SW": this.planeGrid[row + 1][col - 1],
+    //                             "W": this.planeGrid[row][col - 1],
+    //                             "NW": this.planeGrid[row - 1][col - 1]
+    //                         },
+    //                         downPlane: {
+    //                             "down": this.plane[rol][col],
+    //                             "N": this.planeGrid[row - 1][col],
+    //                             "NE": this.planeGrid[row - 1][col + 1],
+    //                             "E": this.planeGrid[row][col + 1],
+    //                             "SE": this.planeGrid[row + 1][col + 1],
+    //                             "S": this.planeGrid[row + 1][col],
+    //                             "SW": this.planeGrid[row + 1][col - 1],
+    //                             "W": this.planeGrid[row][col - 1],
+    //                             "NW": this.planeGrid[row - 1][col - 1]
+    //                         }
+    //                     }
+    //                 }
+
+    //                 this.planeGrid[row][col].neighbors = neighbors;
+    //             }
+    //         }
+    //     }
+
+    // }
+
+    // setCornerNeighbors(row, col) {
+
+    //     if (row === 0 && col === 0) {
+    //         // N W corner
+    //         return {
+    //             "N": null,
+    //             "NE": null,
+    //             "E": this.planeGrid[row][col + 1],
+    //             "SE": this.planeGrid[row + 1][col + 1],
+    //             "S": this.planeGrid[row + 1][col],
+    //             "SW": null,
+    //             "W": null,
+    //             "NW": null
+    //         }
+    //     } else if (row === 0 && col === this.planeCol - 1) {
+    //         // N E corner
+    //         return {
+    //             "N": null,
+    //             "NE": null,
+    //             "E": null,
+    //             "SE": null,
+    //             "S": this.planeGrid[row + 1][col],
+    //             "SW": this.planeGrid[row + 1][col - 1],
+    //             "W": this.planeGrid[row][col - 1],
+    //             "NW": null
+    //         }
+    //     } else if (row === this.planeRow - 1 && col === this.planeCol - 1) {
+    //         // S E corner
+    //         return {
+    //             "N": this.planeGrid[row - 1][col],
+    //             "NE": null,
+    //             "E": null,
+    //             "SE": null,
+    //             "S": null,
+    //             "SW": null,
+    //             "W": this.planeGrid[row][col - 1],
+    //             "NW": this.planeGrid[row - 1][col - 1]
+    //         }
+    //     } else if (row === this.planeRow - 1 && col === 0) {
+    //         // S W corner
+    //         return {
+    //             "N": this.planeGrid[row - 1][col],
+    //             "NE": this.planeGrid[row - 1][col + 1],
+    //             "E": this.planeGrid[row][col + 1],
+    //             "SE": null,
+    //             "S": null,
+    //             "SW": null,
+    //             "W": null,
+    //             "NW": null
+    //         }
+    //     }
+
+    //     return false
+    // }
+
+    // setBorderNeighbors(row, col) {
+    //     // borders but not corners
+    //     if (row === 0 && !(col === 0 || col === this.planeCol - 1)) {
+    //         // N border
+    //         return {
+    //             "N": null,
+    //             "NE": null,
+    //             "E": this.planeGrid[row][col + 1],
+    //             "SE": this.planeGrid[row + 1][col + 1],
+    //             "S": this.planeGrid[row + 1][col],
+    //             "SW": this.planeGrid[row + 1][col - 1],
+    //             "W": this.planeGrid[row][col - 1],
+    //             "NW": null
+    //         }
+    //     } else if (col === this.planeCol - 1 && !(row === 0 || row === this.planeRow - 1)) {
+    //         // E border
+    //         return {
+    //             "N": this.planeGrid[row - 1][col],
+    //             "NE": this.planeGrid[row - 1][col + 1],
+    //             "E": this.planeGrid[row][col + 1],
+    //             "SE": this.planeGrid[row + 1][col + 1],
+    //             "S": this.planeGrid[row + 1][col],
+    //             "SW": null,
+    //             "W": null,
+    //             "NW": null
+    //         }
+    //     } else if (row === this.planeRow - 1 && !(col === 0 || col === this.planeCol - 1)) {
+    //         // S border
+    //         return {
+    //             "N": this.planeGrid[row - 1][col],
+    //             "NE": this.planeGrid[row - 1][col + 1],
+    //             "E": this.planeGrid[row][col + 1],
+    //             "SE": null,
+    //             "S": null,
+    //             "SW": null,
+    //             "W": this.planeGrid[row][col - 1],
+    //             "NW": this.planeGrid[row - 1][col - 1]
+    //         }
+    //     } else if (col === 0 && !(row === 0 || row === this.planeRow - 1)) {
+    //         // W border
+    //         return {
+    //             "N": this.planeGrid[row - 1][col],
+    //             "NE": this.planeGrid[row - 1][col + 1],
+    //             "E": this.planeGrid[row][col + 1],
+    //             "SE": this.planeGrid[row + 1][col + 1],
+    //             "S": this.planeGrid[row + 1][col],
+    //             "SW": null,
+    //             "W": null,
+    //             "NW": null
+    //         }
+    //     }
+
+    //     return false;
+    // }
 
     render() {
         for(let row=0; row<this.planeRow; row++) {
@@ -223,5 +352,5 @@ class Plane {
 
 module.exports = Plane;
 
-// p.render();
 // p = new Plane();
+// p.setNeighbors();
