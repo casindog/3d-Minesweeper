@@ -23,7 +23,6 @@ class Game {
                 if (i===this.layers) {
                     minesPerPlane.push(mineCount);
                 } else {
-                    // console.log(mineCount)
                     let mines = Math.floor(Math.random()*mineCount);
                     minesPerPlane.push(mines);
                     mineCount -= mines;
@@ -31,8 +30,6 @@ class Game {
             }
              
         }
-
-        // console.log(minesPerPlane)
 
         // intentionally adding 2 to 4
         for (let i=0; i<this.layers+2; i++) {
@@ -71,12 +68,9 @@ class Game {
 
     setNeighbors(plane, idx) {
         let neighbors;
-        // console.log(`plane: ${plane.grid}`)
-        // console.log(`idx: ${idx}`)
         
         for (let row=1; row < plane.row-1; row++) {
             for (let col=1; col < plane.col-1; col++) { 
-                // console.log(`RC: ${row},${col}`)
 
                 neighbors = {
                     upPlane: {
@@ -132,26 +126,92 @@ class Game {
                 break;
             case 'vac':
                 // trigger a recursive call to reveal other adj vacs
-                this.revealVacs();
+                let vacSet = new Set;
+                this.revealVacs(row, col, idx, vacSet);
+                
+                // console.log(vacSet)
+
+                vacSet.forEach((point) => {
+                    point.hidden = false;
+
+                    let neighborsUpPlane = Object.values(point.neighbors.upPlane);
+                    let neighborsSamePlane = Object.values(point.neighbors.samePlane);
+                    let neighborsDownPlane = Object.values(point.neighbors.downPlane);
+
+                    neighborsUpPlane.forEach((point) => {
+                        point.hidden = false;
+                    })
+                    neighborsSamePlane.forEach((point) => {
+                        point.hidden = false;
+                    })
+                    neighborsDownPlane.forEach((point) => {
+                        point.hidden = false;
+                    })
+
+                })
                 break;
         }
 
+        this.renderMove();
+
     }
 
-    revealVacs() {
-        // iterate through the neighbors
-        // if neighbor value is an int then break
-        // if the neighbor value is vac, create new stack.
+    revealVacs(row, col, idx, vacSet) {
+        let neighbors = this.planes[idx].grid[row][col].neighbors;
 
-        // will want to use a set again to prevent infinite loop in stacks.
+        let neighborsUpPlane = Object.values(neighbors.upPlane);
+        let neighborsSamePlane = Object.values(neighbors.samePlane);
+        let neighborsDownPlane = Object.values(neighbors.downPlane);
+
+        // console.log(`Up Plane:`)
+        // console.log(neighborsUpPlane)
+        // console.log('\n')
+        
+        // console.log(`Same Plane:`)
+        // console.log(neighborsSamePlane)
+        // console.log('\n')
+        
+        // console.log(`Down Plane:`)
+        // console.log(neighborsDownPlane)
+        // console.log('\n')
+
+        this.planes[idx].grid[row][col].idx = idx;
+        vacSet.add(this.planes[idx].grid[row][col])
+
+        // iterate through the neighbors
+        neighborsUpPlane.forEach((neighbor) => {
+            if (vacSet.has(neighbor)) { 
+                // do nothing
+            } else if (neighbor.value==='vac') {
+                this.revealVacs(neighbor.row, neighbor.col, idx-1, vacSet);
+            }
+        })
+
+        neighborsSamePlane.forEach((neighbor) => {
+            if (vacSet.has(neighbor)) {
+                // do nothing
+            } else if (neighbor.value==='vac') {
+                this.revealVacs(neighbor.row, neighbor.col, idx, vacSet);
+            }
+        })
+        neighborsDownPlane.forEach((neighbor) => {
+            if (vacSet.has(neighbor)) {
+                // do nothing
+            } else if (neighbor.value==='vac') {
+                this.revealVacs(neighbor.row, neighbor.col, idx+1, vacSet);
+            }
+        })
+
     }
 
     reset() {
         this.gameOver = false;
+        g = new Game();
     }
 
     renderCheat() {
         this.planes.forEach((plane, idx) => {
+            console.log(`planeIdx: ${idx}`)
             plane.render();
             console.log('\n')
         })
@@ -160,9 +220,11 @@ class Game {
     renderMove() {
         this.planes.forEach((plane, idx) => {
             if (idx === 0 || idx === this.planes.length - 1) {
+                console.log(`planeIdx: ${idx}`)
                 plane.render();
                 console.log('\n')
             } else {
+                console.log(`planeIdx: ${idx}`)
                 plane.renderMove();
                 console.log('\n')
             }
@@ -176,4 +238,8 @@ let g = new Game();
 
 // g.player.makeMove(x,y,planeIdx);
 // g.renderCheat();
-g.renderMove()
+g.renderCheat();
+console.log('\n')
+console.log('\n')
+
+g.renderMove();

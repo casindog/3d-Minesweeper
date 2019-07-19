@@ -61,20 +61,14 @@ class Plane {
         for (let row=1; row<plane.row-1; row++) {
             for (let col=1; col<plane.col-1; col++) {
 
-                // console.log(`RC: ${row},${col}`)
                 if (plane.grid[row][col].value === 'Mine') {
                     // do nothing
                 } else {
                     count = 0;
-            
-                    // console.log(Object.values(plane.grid[row][col].neighbors.upPlane))
-                    // console.log(Object.values(plane.grid[row][col].neighbors.samePlane))
-                    // console.log(Object.values(plane.grid[row][col].neighbors.downPlane))
 
-                    neighbors = Object.values(plane.grid[row][col].neighbors.upPlane).concat(Object.values(plane.grid[row][col].neighbors.samePlane)).concat(Object.values(plane.grid[row][col].neighbors.downPlane))
-                    
-                    // console.log(`neighbors: ${neighbors.split(' ')}`)
-                                
+                    neighbors = Object.values(plane.grid[row][col].neighbors.upPlane).concat(
+                                Object.values(plane.grid[row][col].neighbors.samePlane)).concat(
+                                Object.values(plane.grid[row][col].neighbors.downPlane))
 
                     neighbors.forEach((neighbor) => {
                         if (neighbor.value === 'Mine') {
