@@ -41,7 +41,7 @@ class Plane {
                 if (row===0 || row===this.row-1 ||
                     col===0 || col===this.col-1) {
                     
-                    grid[row][col] = null;
+                    grid[row][col] = new Point(row, col, null);
                 } else if (grid[row][col] === undefined) {
                     grid[row][col] = new Point(row,col,'!m');
                 }
@@ -53,9 +53,9 @@ class Plane {
 
 
     render() {
-        for(let row=1; row<this.row-1; row++) {
-            console.log(this.grid[row].slice(1,this.col-1).map((point) => {return `(${point.row},${point.col}): ${point.value}`}).join('  '))
-            console.log('\n')
+        for(let row=0; row<this.row; row++) {
+            console.log(this.grid[row].map((point) => {return `(${point.row},${point.col}): ${point.value}`}).join('  '))
+            // console.log('\n')
         }
     }
 
