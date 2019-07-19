@@ -1,9 +1,9 @@
 const Point = require('./point');
 
 class Plane {
-    // assume 4x4 w/ 4 mines for dev
+    // assume 4x4 w/ 2 mines per plane for dev
     // intentionally adding 2 to 4 because it will help set neighbors. 
-    constructor(row=6, col=6, mines=4) {
+    constructor(row=6, col=6, mines=2) {
         this.row = row;
         this.col = col;
         this.mines = mines;
@@ -30,7 +30,7 @@ class Plane {
             } else if (grid[randRowIdx][randColIdx] instanceof Point) {
                 // do nothing
             } else {
-                grid[randRowIdx][randColIdx] = new Point(randRowIdx, randColIdx, 'M');
+                grid[randRowIdx][randColIdx] = new Point(randRowIdx, randColIdx, 'Mine');
                 mines-- 
             }
 
@@ -51,11 +51,80 @@ class Plane {
         return grid
     }
 
+    setPointValue(plane) {
+        // set value to # if mines adj
+        // set value to 'v' if no bombs adjacent
+        // set value to 'M' if mine
+        let count;
+        let neighbors;
+
+        for (let row=1; row<plane.row-1; row++) {
+            for (let col=1; col<plane.col-1; col++) {
+
+                // console.log(`RC: ${row},${col}`)
+                if (plane.grid[row][col].value === 'Mine') {
+                    // do nothing
+                } else {
+                    count = 0;
+            
+                    // console.log(Object.values(plane.grid[row][col].neighbors.upPlane))
+                    // console.log(Object.values(plane.grid[row][col].neighbors.samePlane))
+                    // console.log(Object.values(plane.grid[row][col].neighbors.downPlane))
+
+                    neighbors = Object.values(plane.grid[row][col].neighbors.upPlane).concat(Object.values(plane.grid[row][col].neighbors.samePlane)).concat(Object.values(plane.grid[row][col].neighbors.downPlane))
+                    
+                    // console.log(`neighbors: ${neighbors.split(' ')}`)
+                                
+
+                    neighbors.forEach((neighbor) => {
+                        if (neighbor.value === 'Mine') {
+                            count++
+                        }
+                    })
+
+                    if (count === 0) {
+                        plane.grid[row][col].value='vac';
+                    } else if (count > 0) {
+                        plane.grid[row][col].value=count;
+                    }
+                }
+
+            }
+        }
+
+    }
 
     render() {
         for(let row=0; row<this.row; row++) {
-            console.log(this.grid[row].map((point) => {return `(${point.row},${point.col}): ${point.value}`}).join('  '))
-            // console.log('\n')
+            console.log(this.grid[row].map((point) => {return (`${point.row},${point.col}: ${point.value}`).padEnd(10, ' ')}).join('  '))
+        }
+    }
+
+    renderMove() {
+        for (let row = 0; row < this.row; row++) {
+            if (row===0 || row===this.row-1) {
+                console.log(this.grid[row].map((point) => {
+                    return (`${point.row},${point.col}: ${point.value}`).padEnd(10, ' ')
+                }).join('  '))
+            } else {
+
+                console.log(this.grid[row].map((point) => {
+                    let display;
+
+                    if (point.col===0 || point.col===this.col-1) {
+                        display = point.value
+                    } else {
+                        if (point.hidden) {
+                            display = 'Hide';
+                        } else {
+                            display = point.value;
+                        }
+                    }
+
+                    return (`${point.row},${point.col}: ${display}`).padEnd(10, ' ')
+                }).join('  '))
+
+            }
         }
     }
 
