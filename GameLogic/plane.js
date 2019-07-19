@@ -125,7 +125,3 @@ class Plane {
 }
 
 module.exports = Plane;
-
-// p = new Plane();
-// p.render();
-// p.setNeighbors();

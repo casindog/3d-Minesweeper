@@ -3,18 +3,22 @@ const Plane = require('./plane');
 
 class Game {
     // assume a 4x4x4 for development
-    constructor(layers=4) {
+    constructor(layers=4,gameConfig = 'cube') {
         this.layers = layers;
         this.gameOver = false;
         this.planes = [];
+        this.gameConfig = gameConfig; 
+        
         this.gameSetup();
+
     }
 
     gameSetup() {
         let minesPerPlane = [];
         
+        // USER EDIT
         // assume 8 mines in a 4x4x4
-        let mineCount = 8;
+        let mineCount = 9;
         
         for (let i=0; i<this.layers+2; i++) {
             if (i===0 || i===this.layers+1) {
@@ -40,14 +44,22 @@ class Game {
             }
         }
 
-        for (let i=1; i<this.layers+1; i++) {
-            this.setNeighbors(this.planes[i], i);
-        }
+        if (this.gameConfig==='cube') {
+            for (let i=1; i<this.layers+1; i++) {
+                this.setNeighbors(this.planes[i], i);
+            } 
+        } else if (this.gameConfig==='wheel') {
+            for (let i = 1; i < this.layers + 1; i++) {
+                this.setNeighbors(this.planes[i], i);
+            } 
 
+            this.setNeighborsWheel(this.planes[1], this.planes[this.layers])
+        }
+        
         for (let i=1; i<this.layers+1; i++) {
             this.planes[i].setPointValue(this.planes[i]);
         }
-
+        
     }
 
     createNullPlane(row, col, val) {
@@ -112,6 +124,53 @@ class Game {
         }
     }
 
+    setNeighborsWheel(topPlane, bottomPlane) {
+        let neighbors = {};
+        
+        // topPlane
+        for (let row = 1; row < this.layers+1; row++) {
+            for (let col = 1; col < this.layers+1; col++) {
+                console.log(bottomPlane.grid[row][col].neighbors)
+                topPlane.grid[row][col].idx = this.layers+1;
+
+                topPlane.grid[row][col].neighbors['upPlane'] = {
+                    "up": bottomPlane.grid[row][col],
+                    "N": bottomPlane.grid[row - 1][col],
+                    "NE": bottomPlane.grid[row - 1][col + 1],
+                    "E": bottomPlane.grid[row][col + 1],
+                    "SE": bottomPlane.grid[row + 1][col + 1],
+                    "S": bottomPlane.grid[row + 1][col],
+                    "SW": bottomPlane.grid[row + 1][col - 1],
+                    "W": bottomPlane.grid[row][col - 1],
+                    "NW": bottomPlane.grid[row - 1][col - 1]
+                }
+            }
+        }
+
+        // bottomPlane
+        for (let row = 1; row < this.layers+1; row++) {
+            for (let col = 1; col < this.layers+1; col++) {
+                console.log(topPlane.grid[row][col].neighbors)
+                bottomPlane.grid[row][col].idx = 1;
+
+                bottomPlane.grid[row][col].neighbors['downPlane'] = {
+                    "down": topPlane.grid[row][col],
+                    "N": topPlane.grid[row - 1][col],
+                    "NE": topPlane.grid[row - 1][col + 1],
+                    "E": topPlane.grid[row][col + 1],
+                    "SE": topPlane.grid[row + 1][col + 1],
+                    "S": topPlane.grid[row + 1][col],
+                    "SW": topPlane.grid[row + 1][col - 1],
+                    "W": topPlane.grid[row][col - 1],
+                    "NW": topPlane.grid[row - 1][col - 1]
+                }
+
+                // plane.grid[row][col].neighbors = neighbors;
+            }
+        }
+
+    }
+
     makeMove(row, col, idx) {
         this.planes[idx].grid[row][col].hidden = false;
         
@@ -128,8 +187,6 @@ class Game {
                 // trigger a recursive call to reveal other adj vacs
                 let vacSet = new Set;
                 this.revealVacs(row, col, idx, vacSet);
-                
-                // console.log(vacSet)
 
                 vacSet.forEach((point) => {
                     point.hidden = false;
@@ -234,12 +291,10 @@ class Game {
 }
 
 // development debugging
-let g = new Game();
+let g = new Game(4, 'wheel');
 
 // g.player.makeMove(x,y,planeIdx);
 // g.renderCheat();
 g.renderCheat();
 console.log('\n')
-console.log('\n')
 
-g.renderMove();
