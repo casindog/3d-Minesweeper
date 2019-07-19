@@ -1,8 +1,8 @@
 class Point {
     constructor(row, col, value) {
-        this.pointRow = row;
-        this.pointCol = col;
-        this.pointValue = value;
+        this.row = row;
+        this.col = col;
+        this.value = value;
 
         this.neighbors;
     }
