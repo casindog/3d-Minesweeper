@@ -1,0 +1,36 @@
+.game {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: 100px 500px 300px;
+    grid-template-rows: 100px 600px;
+}
+
+.header {
+    /* grid-row-start: 1;
+    grid-row-end: 1;
+    grid-column-start: 1;
+    grid-column-end: 4; */
+}
+
+.toggle-view {
+    
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.slide-view {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: 3;
+    grid-column-end: 4;
+}
+
+.main-view {
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 1;
+    grid-column-end: 3;
+}

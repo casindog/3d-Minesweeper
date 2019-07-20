@@ -130,7 +130,7 @@ class Game {
         // topPlane
         for (let row = 1; row < this.layers+1; row++) {
             for (let col = 1; col < this.layers+1; col++) {
-                console.log(bottomPlane.grid[row][col].neighbors)
+
                 topPlane.grid[row][col].idx = this.layers+1;
 
                 topPlane.grid[row][col].neighbors['upPlane'] = {
@@ -150,7 +150,7 @@ class Game {
         // bottomPlane
         for (let row = 1; row < this.layers+1; row++) {
             for (let col = 1; col < this.layers+1; col++) {
-                console.log(topPlane.grid[row][col].neighbors)
+
                 bottomPlane.grid[row][col].idx = 1;
 
                 bottomPlane.grid[row][col].neighbors['downPlane'] = {
@@ -220,18 +220,6 @@ class Game {
         let neighborsSamePlane = Object.values(neighbors.samePlane);
         let neighborsDownPlane = Object.values(neighbors.downPlane);
 
-        // console.log(`Up Plane:`)
-        // console.log(neighborsUpPlane)
-        // console.log('\n')
-        
-        // console.log(`Same Plane:`)
-        // console.log(neighborsSamePlane)
-        // console.log('\n')
-        
-        // console.log(`Down Plane:`)
-        // console.log(neighborsDownPlane)
-        // console.log('\n')
-
         this.planes[idx].grid[row][col].idx = idx;
         vacSet.add(this.planes[idx].grid[row][col])
 
@@ -295,6 +283,6 @@ let g = new Game(4, 'wheel');
 
 // g.player.makeMove(x,y,planeIdx);
 // g.renderCheat();
-g.renderCheat();
-console.log('\n')
+// g.renderCheat();
+// console.log('\n')
 
