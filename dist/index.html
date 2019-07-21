@@ -73,44 +73,54 @@
                 mesh.position.x = x;
                 mesh.position.y = y;
                 mesh.position.z = z;
+                
                 scene.add(mesh);
 
                 const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
 
                 let cubeClicked = false;
                 domEvents.addEventListener(mesh, 'click', event => {
-                    // if (cubeClicked) {
-                        // material.color
+                    if (!cubeClicked) {
+                        // material.color.setHex('0x234234');
+                        material.wireframe = true;
+                        // mesh.color.setRGB({r: 0, g: 0, b:252})
                         cubeClicked = true;
-                    // } else {
+                    } else {
                     //     material.wireframe = true;
                     //     cubeClicked = false;
-                    // }
+                    }
                 })
 
                 domEvents.addEventListener(mesh, 'mouseover', event => {
-                    material.wireframe = true;
+                    material.color.setHex('0xFFFF00');
+
+                    // material.wireframe = true;
                     
                     // material.color.setHex( 0xffffff);
 
                 })
 
                 domEvents.addEventListener(mesh, 'mouseout', event => {
-                    material.wireframe = false;
+                    material.color.setHex('0xD3D3D3');
+
+                    // material.wireframe = false;
 
                     // material.color.setHex(0x555555);
                 })
             }
 
             // light
-            const light = new THREE.PointLight(0xFFFFFF,1,500)
-            light.position.set(10,0,25);
-            scene.add(light);
+            const light1 = new THREE.PointLight(0xFFFFFF,1,500)
+            const light2 = new THREE.PointLight(0xFFFFFF,1,500)
+            light1.position.set(0,0,0);
+            light1.position.set(0,0,25);
+            scene.add(light1);
+            scene.add(light2);
 
             for (let x = 0; x < 4; x++) {
                 for (let y = 0; y < 4; y++) {
                     for (let z = 0; z < 4; z++) {
-                        init(x * 2, y * 2, z * 2);
+                        init(x * 3, y * 3, z * 3);
                     }
                 }
             }
