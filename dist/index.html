@@ -8,11 +8,12 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <!-- <link rel="stylesheet" type="text/css" href="../index.css"> -->
         
-        <title>Document</title>
+        <title>Mine Sweeper 3d-Xtreme</title>
 
         <style>
             body{
                 margin: 0;
+                overflow: hidden;
             }
             canvas {
                 width: 100%;
@@ -23,33 +24,157 @@
     </head>
 
     <body> 
+        <script src="../3js/three.min.js"></script>
+        <script src="../3js/FirstPersonControls.js"></script>
+        <script src="../3js/threex.domevents.js"></script>
 
-            <div class='header'>
-                MINESWEEPER 3D-XTREME
-            </div>
-            
-            <div class='game'>
-            
-                <div class='toggle-view'>
-                    Toggle
-                </div>
-            
-                <div class='slide-view'>
-                    Slide View
-                </div>
-            
-                <div class='main-view'>
-                    Main View
-                </div>
-            
-            </div>
+        <!-- <script src="../3js/cube.js"></script> -->
 
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+        <script>
+        // Cube Game 
+            
+            // SCENE
+            const scene = new THREE.Scene();
+
+            // CAMERA
+            // degree, aspect ratio, nearpane, farpane
+            const camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth/window.innerHeight,
+                1,
+                100
+            );
+
+
+
+            // RENDERER
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor("#e5e5e5");
+            document.body.appendChild(renderer.domElement);
+            camera.position.x = 2;
+            camera.position.y = 3
+            camera.position.z = 15;
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            window.addEventListener('resize', onWindowResize, false);
+            
+
+            // GEOMETRY
+            function init(x, y, z) {
+                const geometry = new THREE.BoxGeometry(1, 1, 1);
+                const material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.x = x;
+                mesh.position.y = y;
+                mesh.position.z = z;
+                scene.add(mesh);
+
+                const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
+
+                let cubeClicked = false;
+                domEvents.addEventListener(mesh, 'click', event => {
+                    // if (cubeClicked) {
+                        // material.color
+                        cubeClicked = true;
+                    // } else {
+                    //     material.wireframe = true;
+                    //     cubeClicked = false;
+                    // }
+                })
+
+                domEvents.addEventListener(mesh, 'mouseover', event => {
+                    material.wireframe = true;
+                    
+                    // material.color.setHex( 0xffffff);
+
+                })
+
+                domEvents.addEventListener(mesh, 'mouseout', event => {
+                    material.wireframe = false;
+
+                    // material.color.setHex(0x555555);
+                })
+            }
+
+            // light
+            const light = new THREE.PointLight(0xFFFFFF,1,500)
+            light.position.set(10,0,25);
+            scene.add(light);
+
+            for (let x = 0; x < 4; x++) {
+                for (let y = 0; y < 4; y++) {
+                    for (let z = 0; z < 4; z++) {
+                        init(x * 2, y * 2, z * 2);
+                    }
+                }
+            }
+            
+            controls = new THREE.FirstPersonControls(camera)
+            controls.lookSpeed = 0.04;
+            controls.movementSpeed = 4;
+
+            const clock = new THREE.Clock();
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // cube.rotation.x += 0.01;
+                // cube.rotation.y += 0.01;
+
+                let delta = clock.getDelta();
+                controls.update(delta);
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+
+            // document.addEventListener('keydown', Keyboard, false);
+
+            // function Keyboard() {
+            //     let speed = 0.2;
+
+            //     // WASDRF
+            //     if (event.keyCode === 65) {
+            //         // A
+            //         camera.position.x -= speed;
+            //     } else if (event.keyCode === 68) {
+            //         // D 
+            //         camera.position.x += speed;
+            //     } else if (event.keyCode === 83) {
+            //         // W
+            //         camera.position.z += speed;
+            //     } else if (event.keyCode === 87) {
+            //         // S
+            //         camera.position.z -= speed;
+            //     } else if (event.keyCode === 82) {
+            //         // R
+            //         camera.position.y += speed;
+            //     } else if (event.keyCode === 70) {
+            //         // F
+            //         camera.position.y -= speed;
+            //     }
+
+            // }
+
+            // renderer.render(scene, camera);
+
+
+        </script>
+
+        <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script> -->
         <!-- for debugging -->
         <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.5/dat.gui.min.js"></script> -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script> -->
+        <!-- <script src="../3js/PointerLockControls.js"> -->
 
-        <script src="../3js/cube.js"></script>
 
     </body>
 
