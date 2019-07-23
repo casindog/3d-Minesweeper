@@ -1,5 +1,4 @@
-const Plane = require('./plane');
-// const Player = require('./player');
+// const Plane = require('./plane');
 
 class Game {
     // assume a 4x4x4 for development
@@ -279,7 +278,7 @@ class Game {
 }
 
 // development debugging
-let g = new Game(4, 'wheel');
+// let g = new Game(4, 'wheel');
 
 // g.player.makeMove(x,y,planeIdx);
 // g.renderCheat();

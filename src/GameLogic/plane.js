@@ -1,4 +1,4 @@
-const Point = require('./point');
+// const Point = require('./point');
 
 class Plane {
     // assume 4x4 w/ 2 mines per plane for dev
@@ -124,4 +124,4 @@ class Plane {
 
 }
 
-module.exports = Plane;
+// module.exports = Plane;

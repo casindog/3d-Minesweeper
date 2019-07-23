@@ -27,12 +27,14 @@
         <script src="../3js/three.min.js"></script>
         <script src="../3js/FirstPersonControls.js"></script>
         <script src="../3js/threex.domevents.js"></script>
-
+        <script src="../src/GameLogic/game.js"> </script>
+        <script src="../src/GameLogic/plane.js"> </script>
+        <script src="../src/GameLogic/point.js"> </script>
         <!-- <script src="../3js/cube.js"></script> -->
 
         <script>
         // Cube Game 
-            
+
             // SCENE
             const scene = new THREE.Scene();
 
@@ -44,8 +46,6 @@
                 1,
                 100
             );
-
-
 
             // RENDERER
             const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -63,9 +63,11 @@
             }
 
             window.addEventListener('resize', onWindowResize, false);
-            
+
+            // let g  = new Game(4,'cube')
 
             // GEOMETRY
+            // move this to the point logic.
             function init(x, y, z) {
                 const geometry = new THREE.BoxGeometry(1, 1, 1);
                 const material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 });
@@ -110,12 +112,26 @@
             }
 
             // light
-            const light1 = new THREE.PointLight(0xFFFFFF,1,500)
-            const light2 = new THREE.PointLight(0xFFFFFF,1,500)
-            light1.position.set(0,0,0);
+            const light1 = new THREE.PointLight(0xFFFFFF,1,100)
+            const light2 = new THREE.PointLight(0xFFFFFF,1,100)
+            const light3 = new THREE.PointLight(0xFFFFFF,1,100)
+            const light4 = new THREE.PointLight(0xFFFFFF,1,100)
+            const light5 = new THREE.PointLight(0xFFFFFF,1,100)
+            const light6 = new THREE.PointLight(0xFFFFFF,1,100)
+
             light1.position.set(0,0,25);
+            light2.position.set(0,0,-25);
+            light3.position.set(0,25,0);
+            light4.position.set(0,-25,0);
+            light5.position.set(25,0,0);
+            light6.position.set(-25,0,0);
+            
             scene.add(light1);
             scene.add(light2);
+            scene.add(light3);
+            scene.add(light4);
+            scene.add(light5);
+            scene.add(light6);
 
             for (let x = 0; x < 4; x++) {
                 for (let y = 0; y < 4; y++) {
