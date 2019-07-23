@@ -9,14 +9,13 @@ class Game {
         this.gameConfig = gameConfig; 
         
         this.gameSetup();
-
     }
 
     gameSetup() {
         let minesPerPlane = [];
         
         // USER EDIT
-        // assume 8 mines in a 4x4x4
+        // assume 9 mines in a 4x4x4
         let mineCount = 9;
         
         for (let i=0; i<this.layers+2; i++) {

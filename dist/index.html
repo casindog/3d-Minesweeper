@@ -64,50 +64,55 @@
 
             window.addEventListener('resize', onWindowResize, false);
 
-            // let g  = new Game(4,'cube')
+            let g  = new Game(4,'cube')
 
             // GEOMETRY
             // move this to the point logic.
             function init(x, y, z) {
                 const geometry = new THREE.BoxGeometry(1, 1, 1);
-                const material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 });
+                const material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
                 const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.x = x;
-                mesh.position.y = y;
-                mesh.position.z = z;
+                mesh.position.x = x*3;
+                mesh.position.y = y*3;
+                mesh.position.z = z*3;
                 
                 scene.add(mesh);
 
                 const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
 
-                let cubeClicked = false;
                 domEvents.addEventListener(mesh, 'click', event => {
-                    if (!cubeClicked) {
-                        // material.color.setHex('0x234234');
+                    g.planes[z + 1].grid[x + 1][y + 1].hidden === false;
+
+                    if (g.planes[z+1].grid[x+1][y+1].value === "vac") {
                         material.wireframe = true;
-                        // mesh.color.setRGB({r: 0, g: 0, b:252})
-                        cubeClicked = true;
+                       
+                    } else if (g.planes[z+1].grid[x+1][y+1].value === 'Mine') {
+                        material.color.setHex('0x000000');
                     } else {
-                    //     material.wireframe = true;
-                    //     cubeClicked = false;
+                        // light blue
+                        material.color.setHex('0xADD8E6');
                     }
+                    console.log(`xyz coord: ${x+1}, ${y+1}, ${z+1}`)
+
+                    g.makeMove(x+1,y+1,z+1);
+                    // vac cubes should open other vac cubes, we should be able to render them.
+                    // could i use a class method on all cube geometries and then render all cubes
+                    // to have material.wireframe = true
+                    // that are hidden = false && value == vac?
                 })
 
                 domEvents.addEventListener(mesh, 'mouseover', event => {
-                    material.color.setHex('0xFFFF00');
-
-                    // material.wireframe = true;
-                    
-                    // material.color.setHex( 0xffffff);
-
+                    if (g.planes[z+1].grid[x+1][y+1].hidden === true) {
+                        material.color.setHex('0xFFFF00'); // yellow
+                    }
                 })
 
                 domEvents.addEventListener(mesh, 'mouseout', event => {
-                    material.color.setHex('0xD3D3D3');
-
-                    // material.wireframe = false;
-
-                    // material.color.setHex(0x555555);
+                    if (g.planes[z + 1].grid[x + 1][y + 1].hidden === true) {
+                        material.color.setHex('0xD3D3D3');
+                    } else {
+                        // do nothing
+                    }
                 })
             }
 
@@ -136,7 +141,7 @@
             for (let x = 0; x < 4; x++) {
                 for (let y = 0; y < 4; y++) {
                     for (let z = 0; z < 4; z++) {
-                        init(x * 3, y * 3, z * 3);
+                        init(x , y , z );
                     }
                 }
             }
