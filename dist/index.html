@@ -26,11 +26,23 @@
     <body> 
         <script src="../3js/three.min.js"></script>
         <script src="../3js/FirstPersonControls.js"></script>
+        <script src="../3js/OrbitControls.js"></script>
         <script src="../3js/threex.domevents.js"></script>
         <script src="../src/GameLogic/game.js"> </script>
         <script src="../src/GameLogic/plane.js"> </script>
         <script src="../src/GameLogic/point.js"> </script>
         <!-- <script src="../3js/cube.js"></script> -->
+
+        <div id="blocker">
+        
+            <div id="instructions">
+                Welcome to Minesweeper 3d-Xtreme!
+                <span style="font-size:40px">Click to play</span>
+                <br />
+                (W, A, S, D, R, F = Move, MOUSE = Look around, MOUSECLICK = Select)
+            </div>
+        
+        </div>
 
         <script>
         // Cube Game 
@@ -65,55 +77,157 @@
             window.addEventListener('resize', onWindowResize, false);
 
             let g  = new Game(4,'cube')
+            // g.renderCheat()
 
             // GEOMETRY
-            // move this to the point logic.
-            function init(x, y, z) {
-                const geometry = new THREE.BoxGeometry(1, 1, 1);
-                const material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.x = x*3;
-                mesh.position.y = y*3;
-                mesh.position.z = z*3;
-                
-                scene.add(mesh);
+            class CubeUI {
+                constructor(x,y,z) {
+                    this.cubeGL = g.planes[z+1].grid[x+1][y+1];
 
-                const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
+                    const geometry = new THREE.BoxGeometry(1, 1, 1);
+                    this.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
+                    this.mesh = new THREE.Mesh(geometry, this.material);
 
-                domEvents.addEventListener(mesh, 'click', event => {
-                    g.planes[z + 1].grid[x + 1][y + 1].hidden === false;
+                    this.mesh.position.x = x*3;
+                    this.mesh.position.y = y*3;
+                    this.mesh.position.z = z*3;
+                    
+                    scene.add(this.mesh);
 
-                    if (g.planes[z+1].grid[x+1][y+1].value === "vac") {
-                        material.wireframe = true;
-                       
-                    } else if (g.planes[z+1].grid[x+1][y+1].value === 'Mine') {
-                        material.color.setHex('0x000000');
-                    } else {
-                        // light blue
-                        material.color.setHex('0xADD8E6');
-                    }
-                    console.log(`xyz coord: ${x+1}, ${y+1}, ${z+1}`)
+                    const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
+                    let texture;
 
-                    g.makeMove(x+1,y+1,z+1);
-                    // vac cubes should open other vac cubes, we should be able to render them.
-                    // could i use a class method on all cube geometries and then render all cubes
-                    // to have material.wireframe = true
-                    // that are hidden = false && value == vac?
-                })
+                    // dblclick is reserved for recursive search
+                    // domEvents.addEventListener(this.mesh, 'dblclick', event => {
 
-                domEvents.addEventListener(mesh, 'mouseover', event => {
-                    if (g.planes[z+1].grid[x+1][y+1].hidden === true) {
-                        material.color.setHex('0xFFFF00'); // yellow
-                    }
-                })
+                    // });
 
-                domEvents.addEventListener(mesh, 'mouseout', event => {
-                    if (g.planes[z + 1].grid[x + 1][y + 1].hidden === true) {
-                        material.color.setHex('0xD3D3D3');
-                    } else {
+                    domEvents.addEventListener(this.mesh, 'mousedown', event => {
+                        console.log(event)
+
+                        this.cubeGL.hidden === false;
+
+                        switch (event.origDomEvent.button) {
+                            case 0:
+                                console.log("left click")
+
+                                g.makeMove(x + 1, y + 1, z + 1);
+
+                                if (this.cubeGL.value === 'Mine') {
+                                    texture = new THREE.TextureLoader().load('assets/Mine.jpg');
+                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                    this.mesh.material = this.material;
+                                } else {
+                                    cubeArray.forEach((cube) => {
+                                        cube.updateVisibility();
+                                    })
+                                }
+                                break;
+                            case 2:
+                                console.log("right click")
+                                texture = new THREE.TextureLoader().load('assets/flag.png');
+                                this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                this.mesh.material = this.material;
+                                break;
+                        }
+                        
+
+                    })
+
+                    domEvents.addEventListener(this.mesh, 'mouseover', event => {
+                        
+                        if (this.cubeGL.hidden === true) {
+                            this.material.color.setHex('0xFFFF00'); // yellow
+                        }
+                        
+                        domEvents.addEventListener(this.mesh, 'dblclick', event => {
+                            texture = new THREE.TextureLoader().load('assets/flag.png');
+                            this.material = new THREE.MeshBasicMaterial({ map: texture });
+                            this.mesh.material = this.material;
+                        });
+                    })
+
+                    domEvents.addEventListener(this.mesh, 'mouseout', event => {
+                        if (this.cubeGL.hidden === true) {
+                            this.material.color.setHex('0xD3D3D3');
+                        } 
+                    })
+                }
+
+                updateVisibility() {
+                    // "this" refers to the receiver, which is each cube in the forEach loop in cubeArray.
+                    if (this.cubeGL.hidden) {
                         // do nothing
+                    } else {
+                         if (this.cubeGL.value === "vac") {
+                            this.material.wireframe = true;
+                            this.material.color.setHex('0xD3D3D3');
+                        } else {
+                            let texture;
+                            switch (this.cubeGL.value) {
+                                case 1: 
+                                    // blue
+                                    // this.material.color.set('blue');
+                                    texture = new THREE.TextureLoader().load('assets/1.png');
+                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                    this.mesh.material = this.material;
+                                    break;
+                                case 2:
+                                    // green
+                                    // this.material.color.set('green');
+                                    texture = new THREE.TextureLoader().load('assets/2.png');
+                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                    this.mesh.material = this.material;
+                                    break;
+                                case 3:
+                                    // red
+                                    // this.material.color.set('red');
+                                    texture = new THREE.TextureLoader().load('assets/3.png');
+                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                    this.mesh.material = this.material;
+                                    break;
+                                case 4:
+                                    // darkblue
+                                    // this.material.color.setHex('0x000080');
+                                    texture = new THREE.TextureLoader().load('assets/4.png');
+                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                    this.mesh.material = this.material;
+                                    break;
+                                case 5:
+                                    // maroon
+                                    // this.material.color.setHex('0x800000');
+                                    texture = new THREE.TextureLoader().load('assets/5.png');
+                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                    this.mesh.material = this.material;
+                                    break;
+                                case 6:
+                                    // aqua
+                                    // this.material.color.setHex('0x00ffff');
+                                    texture = new THREE.TextureLoader().load('assets/6.png');
+                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                    this.mesh.material = this.material;
+                                    break;
+                                case 7:
+                                    // dark magenta
+                                    // this.material.color.setHex('0xff00ff');
+                                    texture = new THREE.TextureLoader().load('assets/7.png');
+                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                    this.mesh.material = this.material;
+                                    break;
+                                case 8:
+                                    // grey
+                                    // this.material.color.setHex('0x808080');
+                                    texture = new THREE.TextureLoader().load('assets/8.png');
+                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                    this.mesh.material = this.material;
+                                    break;
+                               default:
+                            }
+                        }
+
+                        // this.material.needsUpdate = true;
                     }
-                })
+                }
             }
 
             // light
@@ -138,16 +252,20 @@
             scene.add(light5);
             scene.add(light6);
 
+            let cubeArray = [];
+            // size of game needs updating
             for (let x = 0; x < 4; x++) {
                 for (let y = 0; y < 4; y++) {
                     for (let z = 0; z < 4; z++) {
-                        init(x , y , z );
+                        cubeArray.push(new CubeUI(x , y , z ));
                     }
                 }
             }
+            console.log(cubeArray)
             
-            controls = new THREE.FirstPersonControls(camera)
-            controls.lookSpeed = 0.04;
+            // controls = new THREE.FirstPersonControls(camera)
+            controls = new THREE.OrbitControls(camera)
+            controls.lookSpeed = 0.00;
             controls.movementSpeed = 4;
 
             const clock = new THREE.Clock();
@@ -167,45 +285,35 @@
             animate();
 
 
-            // document.addEventListener('keydown', Keyboard, false);
+            document.addEventListener('keydown', Keyboard, false);
 
-            // function Keyboard() {
-            //     let speed = 0.2;
+            function Keyboard() {
+                let speed = 0.2;
 
-            //     // WASDRF
-            //     if (event.keyCode === 65) {
-            //         // A
-            //         camera.position.x -= speed;
-            //     } else if (event.keyCode === 68) {
-            //         // D 
-            //         camera.position.x += speed;
-            //     } else if (event.keyCode === 83) {
-            //         // W
-            //         camera.position.z += speed;
-            //     } else if (event.keyCode === 87) {
-            //         // S
-            //         camera.position.z -= speed;
-            //     } else if (event.keyCode === 82) {
-            //         // R
-            //         camera.position.y += speed;
-            //     } else if (event.keyCode === 70) {
-            //         // F
-            //         camera.position.y -= speed;
-            //     }
+                // WASDRF
+                if (event.keyCode === 65) {
+                    // A
+                    camera.position.x -= speed;
+                } else if (event.keyCode === 68) {
+                    // D 
+                    camera.position.x += speed;
+                } else if (event.keyCode === 83) {
+                    // W
+                    camera.position.z += speed;
+                } else if (event.keyCode === 87) {
+                    // S
+                    camera.position.z -= speed;
+                } else if (event.keyCode === 82) {
+                    // R
+                    camera.position.y += speed;
+                } else if (event.keyCode === 70) {
+                    // F
+                    camera.position.y -= speed;
+                }
+            }
 
-            // }
-
-            // renderer.render(scene, camera);
-
-
+            
         </script>
-
-        <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script> -->
-        <!-- for debugging -->
-        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.5/dat.gui.min.js"></script> -->
-        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script> -->
-        <!-- <script src="../3js/PointerLockControls.js"> -->
-
 
     </body>
 
