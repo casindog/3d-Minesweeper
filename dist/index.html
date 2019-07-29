@@ -129,33 +129,40 @@
                     const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
                     let texture;
 
-                    // dblclick is reserved for recursive search
-                    // domEvents.addEventListener(this.mesh, 'dblclick', event => {
-
-                    // });
-
                     domEvents.addEventListener(this.mesh, 'mousedown', event => {
-                        console.log(event)
-
-
                         switch (event.origDomEvent.button) {
                             
                             case 0:
                                 // console.log("left click")
-                                this.cubeGL.hidden === false;
-
-
-                                g.makeMove(x + 1, y + 1, z + 1);
-
-                                if (this.cubeGL.value === 'Mine') {
-                                    texture = new THREE.TextureLoader().load('assets/Mine.jpg');
-                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                    this.mesh.material = this.material;
+                                if (this.cubeGL.hidden === 'flagged') {
+                                    // do nothing
                                 } else {
-                                    cubeArray.forEach((cube) => {
-                                        cube.updateVisibility();
-                                    })
+                                    this.cubeGL.hidden === false;
+
+                                    g.makeMove(x + 1, y + 1, z + 1);
+
+                                    if (this.cubeGL.value === 'Mine') {
+                                        texture = new THREE.TextureLoader().load('assets/Mine.jpg');
+                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        this.mesh.material = this.material;
+                                        console.log('You Lose!')
+                                        // <!-- I want to show a modal for lose and click to play again? -->
+
+                                    } else {
+                                        cubeArray.forEach((cube) => {
+                                            cube.updateVisibility();
+                                        })
+                                    }
+
+
+                                    if (notMinesCubes.every(cubeUI => {
+                                        return cubeUI.cubeGL.hidden === false;
+                                    })) {
+                                        console.log('You Win!')
+                                        // <!-- I want to show a modal for win and click to play again? -->
+                                    };
                                 }
+                       
                                 break;
                             case 2:
                                 // console.log("right click")
@@ -173,7 +180,6 @@
 
                                 break;
                         }
-                        
 
                     })
 
@@ -182,12 +188,6 @@
                         if (this.cubeGL.hidden === true) {
                             this.material.color.setHex('0xFFFF00'); // yellow
                         }
-                        
-                        domEvents.addEventListener(this.mesh, 'dblclick', event => {
-                            texture = new THREE.TextureLoader().load('assets/flag.png');
-                            this.material = new THREE.MeshBasicMaterial({ map: texture });
-                            this.mesh.material = this.material;
-                        });
                     })
 
                     domEvents.addEventListener(this.mesh, 'mouseout', event => {
@@ -304,7 +304,8 @@
                     }
                 }
             }
-            // console.log(cubeArray)
+            let notMinesCubes = cubeArray.filter(cubeUI => { return cubeUI.cubeGL.value !== 'Mine' })
+
             
             controls = new THREE.FirstPersonControls(camera)
             // controls = new THREE.OrbitControls(camera)
@@ -336,15 +337,13 @@
                 blocker.style.display = 'none';
                 controls.lookSpeed = 0.02;
                 controls.movementSpeed = 4;
-
-
             }
+
             function BlockerOpen() {
                 if (event.keyCode === 27 ) {
                     blocker.style.display = 'block';
                     controls.lookSpeed = 0;
                 }
-
             }
             
             // function Keyboard() {
@@ -372,10 +371,6 @@
                 // }
             // }
 
-
-
-
-            
         </script>
 
     </body>

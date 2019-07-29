@@ -292,4 +292,4 @@ class Game {
 }
 
 // development debugging
-let g = new Game(4, 'cube');
+// let g = new Game(4, 'cube');
