@@ -7,7 +7,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" type="text/css" href="../index.css">
+        <link rel="stylesheet" type="text/css" href="/index.css">
         
         <title>Mine Sweeper 3d-Xtreme</title>
 
@@ -25,15 +25,34 @@
     </head>
 
     <body> 
-        <script src="../3js/three.min.js"></script>
-        <script src="../3js/FirstPersonControls.js"></script>
-        <script src="../3js/OrbitControls.js"></script>
-        <script src="../3js/threex.domevents.js"></script>
-        <script src="../src/GameLogic/game.js"> </script>
-        <script src="../src/GameLogic/plane.js"> </script>
-        <script src="../src/GameLogic/point.js"> </script>
-        <!-- <script src="../3js/cube.js"></script> -->
-            
+        <script src="/3js/three.min.js"></script>
+        <script src="/3js/FirstPersonControls.js"></script>
+        <script src="/3js/OrbitControls.js"></script>
+        <script src="/3js/threex.domevents.js"></script>
+        <script src="/src/GameLogic/game.js"> </script>
+        <script src="/src/GameLogic/plane.js"> </script>
+        <script src="/src/GameLogic/point.js"> </script>
+        
+        <div id="lose">
+            <div>
+                You Lose!
+            </div>
+
+            <div>
+                Click to play again
+            </div>
+        </div>
+
+        <div id="win">
+            <div>
+                You Win!
+            </div>
+
+            <div>
+                Click to play again
+            </div>
+        </div>
+
         <div id="blocker">
             <div id="instructions">
                 <div>
@@ -51,10 +70,6 @@
                 <div style="font-size:24px">
                 The grid is 4x4x4 and has 8 mines. 
                 </div>
-
-                <!-- <div style="font-size:24px">
-                    Use logic deduction skills to flag mines!
-                </div> -->
 
                 <br />
 
@@ -111,6 +126,14 @@
             let g  = new Game(4,'cube')
             // g.renderCheat()
 
+            // CONTROLS
+             controls = new THREE.FirstPersonControls(camera)
+            // controls = new THREE.OrbitControls(camera)
+            controls.lookSpeed = 0;
+            controls.movementSpeed = 0;
+
+            const clock = new THREE.Clock();
+
             // GEOMETRY
             class CubeUI {
                 constructor(x,y,z) {
@@ -146,7 +169,21 @@
                                         this.material = new THREE.MeshBasicMaterial({ map: texture });
                                         this.mesh.material = this.material;
                                         console.log('You Lose!')
-                                        // <!-- I want to show a modal for lose and click to play again? -->
+                                        // I want to show a modal for lose and click to play again?
+                                        
+                                        let lose = document.getElementById('lose');
+                                        lose.style.display = 'block';
+
+                                        // not doing what i expected
+                                        // controls.lookSpeed = 0;
+                                        // controls.movementSpeed = 0;
+
+                                        document.addEventListener('click', EndGame, false);
+
+                                        function EndGame() {
+                                            controls.lookSpeed = 0;
+                                            controls.movementSpeed = 0;
+                                        }
 
                                     } else {
                                         cubeArray.forEach((cube) => {
@@ -154,12 +191,21 @@
                                         })
                                     }
 
-
                                     if (notMinesCubes.every(cubeUI => {
                                         return cubeUI.cubeGL.hidden === false;
                                     })) {
                                         console.log('You Win!')
-                                        // <!-- I want to show a modal for win and click to play again? -->
+                                        // I want to show a modal for win and click to play again?
+
+                                        const win = document.getElementById('win');
+                                        win.style.display = 'block';
+                                        document.addEventListener('click', EndGame, false);
+
+                                        function EndGame() {
+                                            lose.style.display = 'block';
+                                            controls.lookSpeed = 0;
+                                            controls.movementSpeed = 0;
+                                        }
                                     };
                                 }
                        
@@ -184,7 +230,8 @@
                     })
 
                     domEvents.addEventListener(this.mesh, 'mouseover', event => {
-                        
+                        // how can i configure the hover so that it only highlights the first object
+                        // and not the objects behind the first object? 
                         if (this.cubeGL.hidden === true) {
                             this.material.color.setHex('0xFFFF00'); // yellow
                         }
@@ -307,12 +354,7 @@
             let notMinesCubes = cubeArray.filter(cubeUI => { return cubeUI.cubeGL.value !== 'Mine' })
 
             
-            controls = new THREE.FirstPersonControls(camera)
-            // controls = new THREE.OrbitControls(camera)
-            controls.lookSpeed = 0;
-            controls.movementSpeed = 0;
-
-            const clock = new THREE.Clock();
+           
 
             function animate() {
                 requestAnimationFrame(animate);

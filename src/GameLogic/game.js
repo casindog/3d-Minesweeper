@@ -176,7 +176,6 @@ class Game {
         switch (value) {
             case 'Mine':
                 this.gameOver = true;
-                console.log('You exploded.')
                 break
             case value>0:
                 break;
@@ -273,22 +272,6 @@ class Game {
         })  
     }
 
-    // winOrLose() {
-    //     // if all non mines hidden = false, then win
-    //     if ((this.planes[1].slice(1,5).every((ele) => {
-    //         return ele.value !== "Mine" && ele.hidden === false;
-    //     })) && (this.planes[2].slice(1,5).every((point) => {
-    //         return point.value !== 'Mine' && point.hidden === false;
-    //     })) && (this.planes[3].slice(1,5).every((point) => {
-    //         return point.value !== 'Mine' && point.hidden === false;
-    //     })) && (this.planes[4].slice(1,5).every((point) => {
-    //         return point.value !== 'Mine' && point.hidden === false;
-    //     }))) {
-    //         console.log('You Win!')
-    //     } 
-
-    //     // if player reveals mine, then lose
-    // }
 }
 
 // development debugging
