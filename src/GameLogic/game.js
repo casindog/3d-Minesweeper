@@ -15,8 +15,8 @@ class Game {
         let minesPerPlane = [];
         
         // USER EDIT
-        // assume 9 mines in a 4x4x4
-        let mineCount = 9;
+        // assume 8 mines in a 4x4x4
+        let mineCount = 8;
         
         for (let i=0; i<this.layers+2; i++) {
             if (i===0 || i===this.layers+1) {
@@ -176,7 +176,6 @@ class Game {
         switch (value) {
             case 'Mine':
                 this.gameOver = true;
-                // render mine explosion
                 console.log('You exploded.')
                 break
             case value>0:
@@ -249,7 +248,7 @@ class Game {
 
     reset() {
         this.gameOver = false;
-        g = new Game();
+        g = new Game(4, 'cube');
     }
 
     renderCheat() {
@@ -271,16 +270,26 @@ class Game {
                 plane.renderMove();
                 console.log('\n')
             }
-        })
-            
+        })  
     }
+
+    // winOrLose() {
+    //     // if all non mines hidden = false, then win
+    //     if ((this.planes[1].slice(1,5).every((ele) => {
+    //         return ele.value !== "Mine" && ele.hidden === false;
+    //     })) && (this.planes[2].slice(1,5).every((point) => {
+    //         return point.value !== 'Mine' && point.hidden === false;
+    //     })) && (this.planes[3].slice(1,5).every((point) => {
+    //         return point.value !== 'Mine' && point.hidden === false;
+    //     })) && (this.planes[4].slice(1,5).every((point) => {
+    //         return point.value !== 'Mine' && point.hidden === false;
+    //     }))) {
+    //         console.log('You Win!')
+    //     } 
+
+    //     // if player reveals mine, then lose
+    // }
 }
 
 // development debugging
-// let g = new Game(4, 'wheel');
-
-// g.player.makeMove(x,y,planeIdx);
-// g.renderCheat();
-// g.renderCheat();
-// console.log('\n')
-
+let g = new Game(4, 'cube');

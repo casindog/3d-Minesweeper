@@ -1,3 +1,4 @@
+<!-- python -m SimpleHTTPServer -->
 <!DOCTYPE html>
 
 <html lang="en">
@@ -6,7 +7,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <!-- <link rel="stylesheet" type="text/css" href="../index.css"> -->
+        <link rel="stylesheet" type="text/css" href="../index.css">
         
         <title>Mine Sweeper 3d-Xtreme</title>
 
@@ -32,16 +33,47 @@
         <script src="../src/GameLogic/plane.js"> </script>
         <script src="../src/GameLogic/point.js"> </script>
         <!-- <script src="../3js/cube.js"></script> -->
-
+            
         <div id="blocker">
-        
             <div id="instructions">
-                Welcome to Minesweeper 3d-Xtreme!
-                <span style="font-size:40px">Click to play</span>
+                <div>
+                Welcome to Minesweeper 3d-Xtreme
+                </div>
+
                 <br />
-                (W, A, S, D, R, F = Move, MOUSE = Look around, MOUSECLICK = Select)
+                
+                <div>
+                    Click to play
+                </div>
+
+                <br />
+
+                <div style="font-size:24px">
+                The grid is 4x4x4 and has 8 mines. 
+                </div>
+
+                <!-- <div style="font-size:24px">
+                    Use logic deduction skills to flag mines!
+                </div> -->
+
+                <br />
+
+                <div style="font-size:24px">
+                W, A, S, D, R, F = Move 
+                </div>
+
+                <div style="font-size:24px">
+                    Mouse = Look around
+                </div>
+
+                <div style="font-size:24px">
+                    Mouse Left Click = Select
+                </div>
+
+                <div style="font-size:24px">
+                    Mouse Right Click = Flag
+                </div>
             </div>
-        
         </div>
 
         <script>
@@ -64,9 +96,9 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setClearColor("#e5e5e5");
             document.body.appendChild(renderer.domElement);
-            camera.position.x = 2;
-            camera.position.y = 3
-            camera.position.z = 15;
+            camera.position.x = 5;
+            camera.position.y = 5;
+            camera.position.z = 25;
 
             function onWindowResize() {
                 camera.aspect = window.innerWidth / window.innerHeight;
@@ -105,11 +137,13 @@
                     domEvents.addEventListener(this.mesh, 'mousedown', event => {
                         console.log(event)
 
-                        this.cubeGL.hidden === false;
 
                         switch (event.origDomEvent.button) {
+                            
                             case 0:
-                                console.log("left click")
+                                // console.log("left click")
+                                this.cubeGL.hidden === false;
+
 
                                 g.makeMove(x + 1, y + 1, z + 1);
 
@@ -124,10 +158,19 @@
                                 }
                                 break;
                             case 2:
-                                console.log("right click")
-                                texture = new THREE.TextureLoader().load('assets/flag.png');
-                                this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                this.mesh.material = this.material;
+                                // console.log("right click")
+                                if (this.cubeGL.hidden === true) {
+                                    this.cubeGL.hidden = "flagged"
+
+                                    texture = new THREE.TextureLoader().load('assets/flag.png');
+                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                    this.mesh.material = this.material;
+                                } else if (this.cubeGL.hidden === "flagged") {
+                                    this.cubeGL.hidden = true
+                                    this.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
+                                    this.mesh.material = this.material;
+                                }
+
                                 break;
                         }
                         
@@ -261,12 +304,12 @@
                     }
                 }
             }
-            console.log(cubeArray)
+            // console.log(cubeArray)
             
-            // controls = new THREE.FirstPersonControls(camera)
-            controls = new THREE.OrbitControls(camera)
-            controls.lookSpeed = 0.00;
-            controls.movementSpeed = 4;
+            controls = new THREE.FirstPersonControls(camera)
+            // controls = new THREE.OrbitControls(camera)
+            controls.lookSpeed = 0;
+            controls.movementSpeed = 0;
 
             const clock = new THREE.Clock();
 
@@ -284,33 +327,53 @@
 
             animate();
 
+            const blocker = document.getElementById('blocker');
 
-            document.addEventListener('keydown', Keyboard, false);
+            document.addEventListener('click', BlockerClose, false);
+            document.addEventListener('keydown', BlockerOpen, false);
 
-            function Keyboard() {
-                let speed = 0.2;
+            function BlockerClose() {
+                blocker.style.display = 'none';
+                controls.lookSpeed = 0.02;
+                controls.movementSpeed = 4;
 
-                // WASDRF
-                if (event.keyCode === 65) {
-                    // A
-                    camera.position.x -= speed;
-                } else if (event.keyCode === 68) {
-                    // D 
-                    camera.position.x += speed;
-                } else if (event.keyCode === 83) {
-                    // W
-                    camera.position.z += speed;
-                } else if (event.keyCode === 87) {
-                    // S
-                    camera.position.z -= speed;
-                } else if (event.keyCode === 82) {
-                    // R
-                    camera.position.y += speed;
-                } else if (event.keyCode === 70) {
-                    // F
-                    camera.position.y -= speed;
-                }
+
             }
+            function BlockerOpen() {
+                if (event.keyCode === 27 ) {
+                    blocker.style.display = 'block';
+                    controls.lookSpeed = 0;
+                }
+
+            }
+            
+            // function Keyboard() {
+                // let speed = 0.2;
+
+                // // WASDRF
+                // if (event.keyCode === 65) {
+                //     // A
+                //     camera.position.x -= speed;
+                // } else if (event.keyCode === 68) {
+                //     // D 
+                //     camera.position.x += speed;
+                // } else if (event.keyCode === 83) {
+                //     // W
+                //     camera.position.z += speed;
+                // } else if (event.keyCode === 87) {
+                //     // S
+                //     camera.position.z -= speed;
+                // } else if (event.keyCode === 82) {
+                //     // R
+                //     camera.position.y += speed;
+                // } else if (event.keyCode === 70) {
+                //     // F
+                //     camera.position.y -= speed;
+                // }
+            // }
+
+
+
 
             
         </script>
