@@ -32,7 +32,8 @@
         <script src="src/GameLogic/game.js"> </script>
         <script src="src/GameLogic/plane.js"> </script>
         <script src="src/GameLogic/point.js"> </script>
-        
+        <!-- <script src="3js/raycaster.js"></script>-->
+
         <div id="lose">
             <div id="lose-msg">
                 <div>
@@ -138,6 +139,44 @@
 
             const clock = new THREE.Clock();
 
+            // RayCaster
+            class PickHelper {
+                constructor() {
+                    this.raycaster = new THREE.Raycaster();
+                    this.pickedObject = null;
+                    this.pickedObjectSavedColor = 0;
+                }
+
+                pick(normalizedPosition, scene, camera) {
+                    // if (this.pickedObject) {
+                    //     this.pickedObject.material.emissive.setHex(this.pickedObjectSavedColor);
+                    //     this.pickedObject = undefined;
+                    // }
+
+                    this.raycaster.setFromCamera(normalizedPosition, camera);
+
+                    let intersectedObjects = this.raycaster.intersectObjects(scene.children);
+                    if (intersectedObjects.length) {
+                        this.pickedObject = intersectedObjects[0].object;
+                        this.pickedObjectSavedColor = this.pickedObject.material.emissive.getHex();
+                        console.log(intersectedObjects)
+                        // console.log(this.pickedObject)
+                        // return this.pickedObject
+                    }
+                }
+            }
+
+            const pickPosition = {x: 0, y: 0};
+            function setPickPosition(event) {
+                pickPosition.x = (event.clientX / canvas.clientWidth ) * 2 - 1;
+                pickPosition.y = (event.clientY / canvas.cleintHeight ) * -2 + 1;
+            }
+
+            function clearPickPosition() {
+                pickPosition.x = -100000;
+                pickPosition.y = -100000;
+            }
+
             // GEOMETRY
             class CubeUI {
                 constructor(x,y,z) {
@@ -178,14 +217,14 @@
                                         let lose = document.getElementById('lose');
                                         lose.style.display = 'block';
 
-                                        g = new Game(4, 'cube')
+                                        // g = new Game(4, 'cube')
                                         // not doing what i expected
                                         // controls.lookSpeed = 0;
                                         // controls.movementSpeed = 0;
 
-                                        document.addEventListener('click', EndGame, false);
+                                        document.addEventListener('click', LoseEndGame, false);
 
-                                        function EndGame() {
+                                        function LoseEndGame() {
                                             controls.lookSpeed = 0;
                                             controls.movementSpeed = 0;
                                         }
@@ -202,12 +241,11 @@
                                         console.log('You Win!')
                                         // I want to show a modal for win and click to play again?
 
-                                        const win = document.getElementById('win');
+                                        let win = document.getElementById('win');
                                         win.style.display = 'block';
-                                        document.addEventListener('click', EndGame, false);
+                                        document.addEventListener('click', WinEndGame, false);
 
-                                        function EndGame() {
-                                            lose.style.display = 'block';
+                                        function WinEndGame() {
                                             controls.lookSpeed = 0;
                                             controls.movementSpeed = 0;
                                         }
@@ -236,10 +274,14 @@
 
                     domEvents.addEventListener(this.mesh, 'mouseover', event => {
                         // how can i configure the hover so that it only highlights the first object
-                        // and not the objects behind the first object? 
+                        // and not the objects behind the first object?
+                        let pickHelper = new PickHelper
+                        let pickedObj = pickHelper.pick(pickPosition, scene, camera);
+
                         if (this.cubeGL.hidden === true) {
                             this.material.color.setHex('0xFFFF00'); // yellow
                         }
+
                     })
 
                     domEvents.addEventListener(this.mesh, 'mouseout', event => {
