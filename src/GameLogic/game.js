@@ -259,17 +259,17 @@ class Game {
     }
 
     renderMove() {
-        this.planes.forEach((plane, idx) => {
-            if (idx === 0 || idx === this.planes.length - 1) {
-                console.log(`planeIdx: ${idx}`)
-                plane.render();
-                console.log('\n')
-            } else {
-                console.log(`planeIdx: ${idx}`)
-                plane.renderMove();
-                console.log('\n')
-            }
-        })  
+        // this.planes.forEach((plane, idx) => {
+        //     if (idx === 0 || idx === this.planes.length - 1) {
+        //         console.log(`planeIdx: ${idx}`)
+        //         plane.render();
+        //         console.log('\n')
+        //     } else {
+        //         console.log(`planeIdx: ${idx}`)
+        //         plane.renderMove();
+        //         console.log('\n')
+        //     }
+        // })  
     }
 
 }
