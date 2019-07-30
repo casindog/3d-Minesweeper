@@ -1,7 +1,7 @@
 // const Point = require('./point');
 
 class Plane {
-    // assume 4x4 w/ 2 mines per plane for dev
+
     // intentionally adding 2 to 4 because it will help set neighbors. 
     constructor(row=6, col=6, mines=2) {
         this.row = row;
@@ -86,6 +86,14 @@ class Plane {
             }
         }
 
+    }
+
+    setPointsPlaneIdx(idx) {
+        for (let row = 1; row < 5; row++) {
+            for (let col = 1; col < 5; col++) {
+                this.grid[row][col].plane = idx;
+            }
+        }
     }
 
     render() {

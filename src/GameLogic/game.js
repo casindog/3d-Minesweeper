@@ -56,6 +56,7 @@ class Game {
         
         for (let i=1; i<this.layers+1; i++) {
             this.planes[i].setPointValue(this.planes[i]);
+            this.planes[i].setPointsPlaneIdx(i)
         }
         
     }

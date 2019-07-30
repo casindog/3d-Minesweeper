@@ -145,15 +145,13 @@
                     this.pickedObject = null;
                 }
 
-                pick(normalizedPosition, scene, camera, cubeUI) {
+                pick(normalizedPosition, scene, camera, cubeUI, event) {
                     this.raycaster.setFromCamera(normalizedPosition, camera);
                     let intersectedObjects = this.raycaster.intersectObjects(scene.children);
                     
                     // console.log(intersectedObjects[0])
-                    if (intersectedObjects.length) {
-                        intersectedObjects[0].object['cubeUI'] = cubeUI;
-                        return intersectedObjects[0].object; 
-                    }
+                    if (intersectedObjects.length) return intersectedObjects[0].object; 
+                    
                 }
             }
 
@@ -167,9 +165,10 @@
                 constructor(x,y,z) {
                     this.cubeGL = g.planes[z+1].grid[x+1][y+1];
 
-                    const geometry = new THREE.BoxGeometry(1, 1, 1);
+                    this.geometry = new THREE.BoxGeometry(1, 1, 1);
                     this.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
-                    this.mesh = new THREE.Mesh(geometry, this.material);
+                    this.mesh = new THREE.Mesh(this.geometry, this.material);
+                    this.geometry.cubeGL = this.cubeGL;
 
                     this.mesh.position.x = x*3;
                     this.mesh.position.y = y*3;
@@ -180,101 +179,94 @@
                     const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
                     let texture;
 
-                    domEvents.addEventListener(this.mesh, 'mousedown', event => {
-                        switch (event.origDomEvent.button) {
-                            
-                            case 0:
-                                // console.log("left click")
-                                if (this.cubeGL.hidden === 'flagged') {
-                                    // do nothing
-                                } else {
-                                    
-                                    pickHelper = new PickHelper
-
-                                    pickPosition.x = (event.origDomEvent.clientX / canvas.clientWidth)  * 2 - 1;
-                                    pickPosition.y = (event.origDomEvent.clientY / canvas.clientHeight)  * -2 + 1;
-                                    pickedObj = pickHelper.pick(pickPosition, scene, camera, this);
-                                    // console.log(this)
-
-                                    pickedObj.cubeUI.cubeGL.hidden === false;
-                                    g.makeMove(x + 1, y + 1, z + 1);
-
-                                    console.log(pickedObj)
-
-                                    if (pickedObj.cubeUI.cubeGL.value === 'Mine') {
-                                        texture = new THREE.TextureLoader().load('assets/Mine.jpg');
-                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                        this.mesh.material = this.material;
-                                        console.log('You Lose!')
-                                        
-                                        let lose = document.getElementById('lose');
-                                        lose.style.display = 'block';
-
-                                        document.addEventListener('click', LoseEndGame, false);
-
-                                        function LoseEndGame() {
-                                            controls.lookSpeed = 0.01;
-                                            controls.movementSpeed = 1;
-                                        }
-
-                                    } else {
-                                        cubeArray.forEach((cube) => {
-                                            cube.updateVisibility();
-                                        })
-                                    }
-
-                                    if (notMinesCubes.every(cubeUI => {
-                                        return cubeUI.cubeGL.hidden === false;
-                                    })) {
-                                        console.log('You Win!')
-                                        // I want to show a modal for win and click to play again?
-
-                                        let win = document.getElementById('win');
-                                        win.style.display = 'block';
-                                        document.addEventListener('click', WinEndGame, false);
-
-                                        function WinEndGame() {
-                                            controls.lookSpeed = 0;
-                                            controls.movementSpeed = 0;
-                                        }
-                                    };
-                                }
-                       
-                                break;
-                            case 2:
-                                // console.log("right click")
-                                if (this.cubeGL.hidden === true) {
-                                    this.cubeGL.hidden = "flagged"
-
-                                    texture = new THREE.TextureLoader().load('assets/flag.png');
-                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                    this.mesh.material = this.material;
-                                } else if (this.cubeGL.hidden === "flagged") {
-                                    this.cubeGL.hidden = true
-                                    this.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
-                                    this.mesh.material = this.material;
-                                }
-
-                                break;
-                        }
-
-                    })
-
-
                     domEvents.addEventListener(this.mesh, 'mouseover', event => {
-                        // how can i configure the hover so that it only highlights the first object
-                        // and not the objects behind the first object?
                         pickHelper = new PickHelper
 
                         pickPosition.x = (event.origDomEvent.clientX / canvas.clientWidth)  * 2 - 1;
                         pickPosition.y = (event.origDomEvent.clientY / canvas.clientHeight)  * -2 + 1;
                         pickedObj = pickHelper.pick(pickPosition, scene, camera);
 
-                        if (this.cubeGL.hidden) pickedObj.material.color.setHex('0xFFFF00');
+                        // these CubeUI are problematic b/c raycasters are being picked up from different cubes,
+                        // as a result, clicking the highlighted box activates a different cube.
 
-                        // if (this.cubeGL.hidden === true) {
-                            // this.material.color.setHex('0xFFFF00'); // yellow
-                        // }
+                        console.log(pickedObj)
+
+                        // this is problematic as well. 
+                        if (pickedObj.geometry.cubeGL.hidden) pickedObj.material.color.setHex('0xFFFF00');
+
+                        domEvents.addEventListener(this.mesh, 'mousedown', eventClick => {
+                            pickedObj['eventClick'] = eventClick;
+                            
+                            console.log(pickedObj)
+
+
+                            switch (pickedObj.eventClick.origDomEvent.button) {
+
+                                case 0:
+                                    // console.log("left click")
+                                    if (pickedObj.geometry.cubeGL.hidden === 'flagged') {
+                                        // do nothing
+                                    } else {
+                                        pickedObj.geometry.cubeGL.hidden === false;
+
+                                        console.log(pickedObj.geometry.cubeGL)
+                                     
+                                        g.makeMove(pickedObj.geometry.cubeGL.row, pickedObj.geometry.cubeGL.col, pickedObj.geometry.cubeGL.plane);
+
+                                        if (pickedObj.geometry.cubeGL.value === 'Mine') {
+                                            texture = new THREE.TextureLoader().load('assets/Mine.jpg');
+                                            this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                            this.mesh.material = this.material;
+
+                                            let lose = document.getElementById('lose');
+                                            lose.style.display = 'block';
+
+                                            document.addEventListener('click', LoseEndGame, false);
+
+                                            function LoseEndGame() {
+                                                controls.lookSpeed = 0.01;
+                                                controls.movementSpeed = 1;
+                                            }
+
+                                        } else {
+                                            cubeArray.forEach((cube) => {
+                                                cube.updateVisibility();
+                                            })
+                                        }
+
+                                        if (notMinesCubes.every(cubeUI => {
+                                            return cubeUI.cubeGL.hidden === false;
+                                        })) {
+
+                                            let win = document.getElementById('win');
+                                            win.style.display = 'block';
+                                            document.addEventListener('click', WinEndGame, false);
+
+                                            function WinEndGame() {
+                                                controls.lookSpeed = 0;
+                                                controls.movementSpeed = 0;
+                                            }
+                                        };
+                                    }
+
+                                    break;
+                                case 2:
+                                    // console.log("right click")
+                                    if (this.cubeGL.hidden === true) {
+                                        this.cubeGL.hidden = "flagged"
+
+                                        texture = new THREE.TextureLoader().load('assets/flag.png');
+                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        this.mesh.material = this.material;
+                                    } else if (this.cubeGL.hidden === "flagged") {
+                                        this.cubeGL.hidden = true
+                                        this.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
+                                        this.mesh.material = this.material;
+                                    }
+
+                                    break;
+                            }
+                        })
 
                     })
 
@@ -357,8 +349,6 @@
                                default:
                             }
                         }
-
-                        // this.material.needsUpdate = true;
                     }
                 }
             }
