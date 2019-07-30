@@ -232,6 +232,13 @@
                                                 controls.movementSpeed = 1;
                                             }
 
+                                        } else if (pickedObj.geometry.cubeGL.value === 'vac') { 
+                                            pickedObj.geometry.material.wireframe = true;
+                                            pickedObj.geometry.material.color.setHex('0xD3D3D3');
+                                            
+                                            cubeArray.forEach((cube) => {
+                                                cube.updateVisibility();
+                                            })
                                         } else {
                                             cubeArray.forEach((cube) => {
                                                 cube.updateVisibility();
