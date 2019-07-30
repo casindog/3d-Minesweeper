@@ -192,7 +192,7 @@
                         console.log(pickedObj)
 
                         // this is problematic as well. 
-                        if (pickedObj.geometry.cubeGL.hidden) pickedObj.material.color.setHex('0xFFFF00');
+                        if (pickedObj.geometry.cubeGL.hidden === true) pickedObj.material.color.setHex('0xFFFF00');
 
                         domEvents.addEventListener(this.mesh, 'mousedown', eventClick => {
                             pickedObj['eventClick'] = eventClick;
@@ -252,16 +252,16 @@
                                     break;
                                 case 2:
                                     // console.log("right click")
-                                    if (this.cubeGL.hidden === true) {
-                                        this.cubeGL.hidden = "flagged"
+                                    if (pickedObj.geometry.cubeGL.hidden === true) {
+                                        pickedObj.geometry.cubeGL.hidden = "flagged"
 
                                         texture = new THREE.TextureLoader().load('assets/flag.png');
-                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                        this.mesh.material = this.material;
-                                    } else if (this.cubeGL.hidden === "flagged") {
-                                        this.cubeGL.hidden = true
-                                        this.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
-                                        this.mesh.material = this.material;
+                                        pickedObj.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        pickedObj.mesh.material = pickedObj.material;
+                                    } else if ( pickedObj.geometry.hidden === "flagged") {
+                                         pickedObj.geometry.hidden = true
+                                        pickedObj.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
+                                        pickedObj.mesh.material = pickedObj.material;
                                     }
 
                                     break;
