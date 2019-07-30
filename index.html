@@ -71,25 +71,25 @@
 
                 <br />
 
-                <div style="font-size:24px">
-                The grid is 4x4x4 and has 8 mines. 
+                <div class="instructions-small">
+                The grid is 4x4x4 and has 8 mines
                 </div>
 
                 <br />
 
-                <div style="font-size:24px">
+                <div class="instructions-small">
                 W, A, S, D, R, F = Move 
                 </div>
 
-                <div style="font-size:24px">
+                <div class="instructions-small">
                     Mouse = Look around
                 </div>
 
-                <div style="font-size:24px">
+                <div class="instructions-small">
                     Mouse Left Click = Select
                 </div>
 
-                <div style="font-size:24px">
+                <div class="instructions-small">
                     Mouse Right Click = Flag
                 </div>
             </div>
@@ -149,9 +149,7 @@
                     this.raycaster.setFromCamera(normalizedPosition, camera);
                     let intersectedObjects = this.raycaster.intersectObjects(scene.children);
                     
-                    // console.log(intersectedObjects[0])
                     if (intersectedObjects.length) return intersectedObjects[0].object; 
-                    
                 }
             }
 
@@ -190,19 +188,21 @@
                         pickPosition.y = (event.origDomEvent.clientY / canvas.clientHeight)  * -2 + 1;
                         pickedObj = pickHelper.pick(pickPosition, scene, camera);
 
-                        // these CubeUI are problematic b/c raycasters are being picked up from different cubes,
-                        // as a result, clicking the highlighted box activates a different cube.
-
-                        console.log(pickedObj)
-
-                        // this is problematic as well. 
                         if (pickedObj.geometry.cubeGL.hidden === true) pickedObj.material.color.setHex('0xFFFF00');
+
+                        domEvents.addEventListener(this.mesh, 'mouseout', event => {
+                            if (this.cubeGL.hidden === true) {
+                                this.material.color.setHex('0xD3D3D3');
+                                this.geometry.material.color.setHex('0xD3D3D3');
+                            } else {
+                                // this.material.color.setHex('0xFFFFFF');
+                            }
+                        })
 
                         domEvents.addEventListener(this.mesh, 'mousedown', eventClick => {
                             pickedObj['eventClick'] = eventClick;
                             
-                            console.log(pickedObj)
-
+                            // console.log(pickedObj)
 
                             switch (pickedObj.eventClick.origDomEvent.button) {
 
@@ -212,8 +212,6 @@
                                         // do nothing
                                     } else {
                                         pickedObj.geometry.cubeGL.hidden === false;
-
-                                        console.log(pickedObj.geometry.cubeGL)
                                      
                                         g.makeMove(pickedObj.geometry.cubeGL.row, pickedObj.geometry.cubeGL.col, pickedObj.geometry.cubeGL.plane);
 
@@ -228,8 +226,8 @@
                                             document.addEventListener('click', LoseEndGame, false);
 
                                             function LoseEndGame() {
-                                                controls.lookSpeed = 0.01;
-                                                controls.movementSpeed = 1;
+                                                controls.lookSpeed = 0.005;
+                                                controls.movementSpeed = 0.5;
                                             }
 
                                         } else if (pickedObj.geometry.cubeGL.value === 'vac') { 
@@ -251,12 +249,12 @@
 
                                             let win = document.getElementById('win');
                                             win.style.display = 'block';
-                                            document.addEventListener('click', WinEndGame, false);
+                                            // document.addEventListener('click', WinEndGame, false);
 
-                                            function WinEndGame() {
-                                                controls.lookSpeed = 0;
-                                                controls.movementSpeed = 0;
-                                            }
+                                            // function WinEndGame() {
+                                            //     // controls.lookSpeed = 0;
+                                            //     // controls.movementSpeed = 0;
+                                            // }
                                         };
                                     }
 
@@ -264,7 +262,7 @@
                                 case 2:
                                     // console.log("right click")
                                     if (pickedObj.geometry.cubeGL.hidden === true) {
-                                        pickedObj.geometry.cubeGL.hidden = "flagged"
+                                        pickedObj.geometry.cubeGL.hidden = "flagged";
 
                                         texture = new THREE.TextureLoader().load('assets/flag.png');
                                         pickedObj.geometry.material = new THREE.MeshBasicMaterial({ map: texture });
@@ -281,13 +279,6 @@
 
                     })
 
-                    domEvents.addEventListener(this.mesh, 'mouseout', event => {
-                        if (this.cubeGL.hidden === true) {
-                            this.material.color.setHex('0xD3D3D3');
-                        } else {
-                            this.material.color.setHex('0xFFFFFF');
-                        }
-                    })
                 }
 
                 updateVisibility() {
@@ -295,69 +286,74 @@
                     if (this.cubeGL.hidden) {
                         // do nothing
                     } else {
-                         if (this.cubeGL.value === "vac") {
-                            this.material.wireframe = true;
-                            this.material.color.setHex('0xD3D3D3');
-                        } else {
-                            let texture;
-                            switch (this.cubeGL.value) {
-                                case 1: 
-                                    // blue
-                                    // this.material.color.set('blue');
-                                    texture = new THREE.TextureLoader().load('assets/1.png');
-                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                    this.mesh.material = this.material;
+                        if (!this.cubeGL.updated) {
+                            this.cubeGL.updated = true;
+                            if (this.cubeGL.value === "vac") {
+                                this.material.wireframe = true;
+                                this.material.color.setHex('0xD3D3D3');
+                            } else {
+                                console.log(this);
+                                let texture;
+                                switch (this.cubeGL.value) {
+                                    case 1: 
+                                        // blue
+                                        // this.material.color.set('blue');
+                                        texture = new THREE.TextureLoader().load('assets/1.png');
+                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        this.mesh.material = this.material;
+                                        break;
+                                    case 2:
+                                        // green
+                                        // this.material.color.set('green');
+                                        texture = new THREE.TextureLoader().load('assets/2.png');
+                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        this.mesh.material = this.material;
+                                        break;
+                                    case 3:
+                                        // red
+                                        // this.material.color.set('red');
+                                        texture = new THREE.TextureLoader().load('assets/3.png');
+                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        this.mesh.material = this.material;
+                                        break;
+                                    case 4:
+                                        // darkblue
+                                        // this.material.color.setHex('0x000080');
+                                        texture = new THREE.TextureLoader().load('assets/4.png');
+                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        this.mesh.material = this.material;
+                                        break;
+                                    case 5:
+                                        // maroon
+                                        // this.material.color.setHex('0x800000');
+                                        texture = new THREE.TextureLoader().load('assets/5.png');
+                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        this.mesh.material = this.material;
+                                        break;
+                                    case 6:
+                                        // aqua
+                                        // this.material.color.setHex('0x00ffff');
+                                        texture = new THREE.TextureLoader().load('assets/6.png');
+                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        this.mesh.material = this.material;
+                                        break;
+                                    case 7:
+                                        // dark magenta
+                                        // this.material.color.setHex('0xff00ff');
+                                        texture = new THREE.TextureLoader().load('assets/7.png');
+                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        this.mesh.material = this.material;
+                                        break;
+                                    case 8:
+                                        // grey
+                                        // this.material.color.setHex('0x808080');
+                                        texture = new THREE.TextureLoader().load('assets/8.png');
+                                        this.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        this.mesh.material = this.material;
+                                        break;
+                                default:
                                     break;
-                                case 2:
-                                    // green
-                                    // this.material.color.set('green');
-                                    texture = new THREE.TextureLoader().load('assets/2.png');
-                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                    this.mesh.material = this.material;
-                                    break;
-                                case 3:
-                                    // red
-                                    // this.material.color.set('red');
-                                    texture = new THREE.TextureLoader().load('assets/3.png');
-                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                    this.mesh.material = this.material;
-                                    break;
-                                case 4:
-                                    // darkblue
-                                    // this.material.color.setHex('0x000080');
-                                    texture = new THREE.TextureLoader().load('assets/4.png');
-                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                    this.mesh.material = this.material;
-                                    break;
-                                case 5:
-                                    // maroon
-                                    // this.material.color.setHex('0x800000');
-                                    texture = new THREE.TextureLoader().load('assets/5.png');
-                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                    this.mesh.material = this.material;
-                                    break;
-                                case 6:
-                                    // aqua
-                                    // this.material.color.setHex('0x00ffff');
-                                    texture = new THREE.TextureLoader().load('assets/6.png');
-                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                    this.mesh.material = this.material;
-                                    break;
-                                case 7:
-                                    // dark magenta
-                                    // this.material.color.setHex('0xff00ff');
-                                    texture = new THREE.TextureLoader().load('assets/7.png');
-                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                    this.mesh.material = this.material;
-                                    break;
-                                case 8:
-                                    // grey
-                                    // this.material.color.setHex('0x808080');
-                                    texture = new THREE.TextureLoader().load('assets/8.png');
-                                    this.material = new THREE.MeshBasicMaterial({ map: texture });
-                                    this.mesh.material = this.material;
-                                    break;
-                               default:
+                                }
                             }
                         }
                     }
