@@ -168,7 +168,11 @@
                     this.geometry = new THREE.BoxGeometry(1, 1, 1);
                     this.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
                     this.mesh = new THREE.Mesh(this.geometry, this.material);
+
+                    // hacky way kindof like super props
                     this.geometry.cubeGL = this.cubeGL;
+                    this.geometry.mesh = this.mesh;
+                    this.geometry.material = this.material;
 
                     this.mesh.position.x = x*3;
                     this.mesh.position.y = y*3;
@@ -256,12 +260,12 @@
                                         pickedObj.geometry.cubeGL.hidden = "flagged"
 
                                         texture = new THREE.TextureLoader().load('assets/flag.png');
-                                        pickedObj.material = new THREE.MeshBasicMaterial({ map: texture });
-                                        pickedObj.mesh.material = pickedObj.material;
-                                    } else if ( pickedObj.geometry.hidden === "flagged") {
-                                         pickedObj.geometry.hidden = true
-                                        pickedObj.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
-                                        pickedObj.mesh.material = pickedObj.material;
+                                        pickedObj.geometry.material = new THREE.MeshBasicMaterial({ map: texture });
+                                        pickedObj.geometry.mesh.material = pickedObj.geometry.material;
+                                    } else if ( pickedObj.geometry.cubeGL.hidden === "flagged") {
+                                        pickedObj.geometry.cubeGL.hidden = true;
+                                        pickedObj.geometry.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
+                                        pickedObj.geometry.mesh.material = pickedObj.geometry.material;
                                     }
 
                                     break;
