@@ -1,7 +1,12 @@
+<h1>
 Technologies:
+</h1>
+
 JavaScript, ThreeJS, ThreeJSx, CSS, HTML5
 
+<h1>
 Game Introduction and Pictures:
+</h1>
 
 ![GameIntro](assets/game_intro.png)
  
@@ -9,23 +14,26 @@ Let us take a look at the yellow highlighted cubes in the following pictures. Bo
 
 1. In 2D minesweeper, the cube has only 1 plane. Therefore, the cube's neighbors are only the cubes next to it: left, right and diagonal.
 
-picture
+![Example1](assets/example1.png)
 
 The maximum number of neighbors in 2D is 8. 
 
 2. In 3D minesweeper, the cube's neighbors also have to consider the neighbors on planes above and below itself. This example only demonstrates neighbors on the plane above it since the yellow cube has no plane below it. 
 
-picture
+![Example2](assets/example2.png)
 
 The maximum number of neighbors in 3D is 26: 9 cubes on the plane below, 8 cubes on the same plane, 9 cubes on the plane above. 
 
 
 Have Fun!
 
-
+<h1>
 Code Snippets:
+</h1>
 
+<h2>
 User Interface & RayCasting: 
+</h2>
 
 Because I was developing a 3D game, I ran into an issue where eventlisteners click and hover would also select cube instances behind the initially selected cube. The solution was to introduce Raycasting. Raycasting works by sending a ray/line through the 3D scene from two coordinates, ie: (x1,y1,z1) and (x2,y2,z2). Any intersected object in the scene would be unshifted to an array. In order to identify only the first object, I would key into the first element of the array. The raycasting code was already provided by the threeJS tutorial documents. However, in order to use it effectively in my project, I needed to make additional adjustments. 
 
@@ -78,8 +86,9 @@ I had to nest my mouse event listeners, because I needed to use the enclosure pr
 
                     break;
 ```
-
+<h2>
 Game Logic & Data Structure & Recursion:
+</h2>
 
  In regular minesweeper, when the player selects a vacant square, the selection reveals all neighboring squares with values either vacant or the count of neighboring bombs. Each instance of cube has an attribute neighbors, which is an object that points to its neighboring cubes. This demonstrates the use of the graph data structure. 
  
