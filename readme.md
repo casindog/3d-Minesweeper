@@ -3,7 +3,7 @@ JavaScript, ThreeJS, ThreeJSx, CSS, HTML5
 
 Game Introduction and Pictures:
 
-picture
+![GameIntro](assets/game_intro.png)
  
 Let us take a look at the yellow highlighted cubes in the following pictures. Both are taken from a top-down view. 
 
