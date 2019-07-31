@@ -2,10 +2,10 @@
 Technologies
 </h1>
 
-JavaScript, ThreeJS, ThreeJSx, CSS, HTML5
+JavaScript, ThreeJS, ThreeJSx, CSS, HTML5, Object Oriented Programming
 
 <h1>
-Game Introduction and Pictures
+Introduction and Pictures
 </h1>
 
 ![GameIntro](assets/game_intro1.png)
@@ -36,7 +36,7 @@ User Interface: Raycasting & Enclosure of pickedObj & Nesting of EventListeners
 
 Because of the nature of working in 3D, I experienced problems with user interface because event listeners click and hover would activate cubes directly behind the  selected cube. This would be a frustrating experience for the player because the player would activate cubes unintentionally. The solution was implementing Raycasting. Raycasting creates an instance of a ray/line through the 3D scene. It takes two input coordinates: camera position (x1,y1,z1) and cube position (x2,y2,z2). Any intersected object from the ray would be pushed to an array. For my game, I only needed to first element of the array to identify the first cube intersected. Implementing Raycasting is aleady provided by the ThreeJS tutorial documents. However in order to use Raycasting effectively for my project, I needed to make more changes to my code. Because the pickedObj from the ray instances did not have the texture/material/mesh attributes, I was not able to change the cube's appearance upon an event. Initially, I attempted to pass down the cube object into the ray instance. The passing down means I assigned a key-value pair in the ray instance. This did not work, because while the ray instance correctly identifed the 1st cube, the passed-down cube was from the cube coordinates that the ray instance takes as input. For example, if I hovered over 2 cubes, then two ray instances are created. Both ray correctly identifies the first cube, but I was wrongly updating the texture/material/mesh appearance on the passed-down cube.
 
-My solution required enclosing the variable pickedObj in nested event listeners mouseover, mouseout, and mousdown. I am still passing down the cubeGL, mesh and material in this.geometry, which is accessible in the ray instance POJO. I declare and define the pickedObj variable in the mouseover event. The nested click event uses the enclosed pickedObj. Note that the mouseout is intentionally set to "this" because I want all hovered cube's appearances reset to default settings. The following snippet is a redacted versino of my CubeUI class:
+My solution required enclosing the variable pickedObj in nested event listeners mouseover, mouseout, and mousdown. I am still passing down the cubeGL, mesh and material in this.geometry, which is accessible in the ray instance. I declare and define the pickedObj variable in the mouseover event. The nested click event uses the enclosed pickedObj. Note that the mouseout is intentionally set to "this" because I want all hovered cube's appearances reset to default settings. The following snippet is a redacted versino of my CubeUI class:
 
 ```
 class CubeUI {
