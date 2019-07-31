@@ -1,5 +1,5 @@
 <h1>
-Technologies:
+Technologies
 </h1>
 
 JavaScript, ThreeJS, ThreeJSx, CSS, HTML5
@@ -10,7 +10,7 @@ Game Introduction and Pictures:
 
 ![GameIntro](assets/game_intro1.png)
  
-Let us take a look at the yellow highlighted cubes in the following pictures. Both are taken from a top-down view. 
+Let us take a look at the yellow highlighted cubes in the following pictures. 
 
 1. In 2D minesweeper, the game has only one plane. Therefore, the yellow cube's neighbors are the cubes next to it: left, right and diagonal.
 
@@ -27,14 +27,14 @@ The maximum number of neighbors in 3D is 26: 9 cubes on the plane below, 8 cubes
 Have Fun!
 
 <h1>
-Code Snippets:
+Code Snippets
 </h1>
 
 <h2>
-User Interface & RayCasting: 
+User Interface: RayCasting
 </h2>
 
-Because I was developing a 3D game, I ran into an issue where eventlisteners click and hover would also select cube instances behind the initially selected cube. The solution was to introduce Raycasting. Raycasting works by sending a ray/line through the 3D scene from two coordinates, ie: (x1,y1,z1) and (x2,y2,z2). Any intersected object in the scene would be unshifted to an array. In order to identify only the first object, I would key into the first element of the array. The raycasting code was already provided by the threeJS tutorial documents. However, in order to use it effectively in my project, I needed to make additional adjustments. 
+Because I was developing in 3D, I had issues with user interface because event listeners click and hover would select cubes directly behind the initially selected cube. This would be a frustrating experience for the player because the player would activate cubes unintentionally. The solution was adding Raycasting. Raycasting creates an instance of a ray/line through the 3D scene with two input coordinates: camera position (x1,y1,z1) and cube position (x2,y2,z2). Any intersected object from the ray would be pushed to an array. For my game, I only needed to identify the first cube, so I key into the first element of the array. Implementing Raycasting is provided by the ThreeJS tutorial documents. However, in order to use Raycasting effectively for my project, I needed to tinker with my code. 
 
 I had to nest my mouse event listeners, because I needed to use the enclosure property of javascript. I am enclosing the variable pickedObj, which identifies the 1st cube object in the scene. I initially tried another solution where I would pass down the cube object into the ray instance. However, that was problematic because I did not realize that I was passing the wrong cube object from each ray. For example,if I were hovering over 2 cubes, the passed down cube from each ray would be the 2 different cubes, but the ray would correctly identify the front cube. Because the ray did not have the attributes to change the texture/material/mesh of the object, my click listeners would update the wrong cubes. This was difficult to debug and figure out.  
 
@@ -86,7 +86,7 @@ I had to nest my mouse event listeners, because I needed to use the enclosure pr
                     break;
 ```
 <h2>
-Game Logic & Data Structure & Recursion:
+Game Logic: Data Structure & Recursion
 </h2>
 
  In regular minesweeper, when the player selects a vacant square, the selection reveals all neighboring squares with values either vacant or the count of neighboring bombs. Each instance of cube has an attribute neighbors, which is an object that points to its neighboring cubes. This demonstrates the use of the graph data structure. 
