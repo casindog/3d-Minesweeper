@@ -31,60 +31,86 @@ Code Snippets
 </h1>
 
 <h2>
-User Interface: RayCasting
+User Interface: Raycasting & Enclosure of pickedObj & Nesting of EventListeners
 </h2>
 
 Because I was developing in 3D, I had issues with user interface because event listeners click and hover would select cubes directly behind the initially selected cube. This would be a frustrating experience for the player because the player would activate cubes unintentionally. The solution was adding Raycasting. Raycasting creates an instance of a ray/line through the 3D scene with two input coordinates: camera position (x1,y1,z1) and cube position (x2,y2,z2). Any intersected object from the ray would be pushed to an array. For my game, I only needed to identify the first cube, so I key into the first element of the array. Implementing Raycasting is provided by the ThreeJS tutorial documents. However, in order to use Raycasting effectively for my project, I needed to tinker with my code. 
 
-I had to nest my mouse event listeners, because I needed to use the enclosure property of javascript. I am enclosing the variable pickedObj, which identifies the 1st cube object in the scene. I initially tried another solution where I would pass down the cube object into the ray instance. However, that was problematic because I did not realize that I was passing the wrong cube object from each ray. For example,if I were hovering over 2 cubes, the passed down cube from each ray would be the 2 different cubes, but the ray would correctly identify the front cube. Because the ray did not have the attributes to change the texture/material/mesh of the object, my click listeners would update the wrong cubes. This was difficult to debug and figure out.  
+Because the pickedObj from the ray instances did not have the texture/material/mesh attributes, I was not able to change the cube's appearance upon a event action. Initially, I failed-attempted to pass down the cube object into the ray instance. The passing down means I assigned a key-value pair in the ray instance. This did not work, because while the ray instance correctly identifed the 1st cube, the passed-down cube was from the cube coordinates that the ray takes in as input. For example, if I hovered over 2 cubes, then two ray instances are created. Both ray rays correctly identify the first cube, but I would update the texture/material/mesh appearance of the the passed-down cube instead. 
+
+After realizing my initial mistakes, my second attempt to fix the issue by enclosing the variable pickedObj and nesting event listeners mouseover, mouseout, and mousdown was successful. I am still passing down the cubeGL, mesh and material in this.geometry, which is accessible in the ray instance POJO. I declare and define the pickedObj variable in the mouseover event. When clicking on the object, I enclose the pickedObj in the nested event listeners. Note that the mouseout is intentionally set to "this" because I want all hovered cube's appearances reset to default settings.
 
 ```
-    domEvents.addEventListener(this.mesh, 'mouseover', event => {
-        pickHelper = new PickHelper
+class CubeUI {
+    constructor(x,y,z) {
+        this.cubeGL = g.planes[z+1].grid[x+1][y+1];
 
-        pickPosition.x = (event.origDomEvent.clientX / canvas.clientWidth)  * 2 - 1;
-        pickPosition.y = (event.origDomEvent.clientY / canvas.clientHeight)  * -2 + 1;
-        pickedObj = pickHelper.pick(pickPosition, scene, camera);
+        this.geometry = new THREE.BoxGeometry(1, 1, 1);
+        this.material = new THREE.MeshLambertMaterial({ color: 0xD3D3D3 }); // gray
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
 
-        if (pickedObj.geometry.cubeGL.hidden === true) pickedObj.material.color.setHex('0xFFFF00');
+        // passing down cubeGL, mesh, material like passing down props in React
+        this.geometry.cubeGL = this.cubeGL;
+        this.geometry.mesh = this.mesh;
+        this.geometry.material = this.material;
 
-        domEvents.addEventListener(this.mesh, 'mouseout', event => {
-            if (this.cubeGL.hidden === true) {
-                this.material.color.setHex('0xD3D3D3');
-                this.geometry.material.color.setHex('0xD3D3D3');
-            } else {
-                // this.material.color.setHex('0xFFFFFF');
-            }
-        })
+        this.mesh.position.x = x*3;
+        this.mesh.position.y = y*3;
+        this.mesh.position.z = z*3;
+        
+        scene.add(this.mesh);
 
-        domEvents.addEventListener(this.mesh, 'mousedown', eventClick => {
-            pickedObj['eventClick'] = eventClick;
-            switch (pickedObj.eventClick.origDomEvent.button) {
+        const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
+        let texture;
 
-                case 0:
-                    // console.log("left click")
-                    if (pickedObj.geometry.cubeGL.hidden === 'flagged') {
-                        // do nothing
-                    } else {
-                        pickedObj.geometry.cubeGL.hidden === false;
-                        g.makeMove(pickedObj.geometry.cubeGL.row, pickedObj.geometry.cubeGL.col, pickedObj.geometry.cubeGL.plane);
-                        
-                        if (pickedObj.geometry.cubeGL.value === 'Mine') {
-                            // commented out for code snippet
-                        } else if (pickedObj.geometry.cubeGL.value === 'vac') { 
-                            pickedObj.geometry.material.wireframe = true;
-                            pickedObj.geometry.material.color.setHex('0xD3D3D3');
-                            
-                            cubeArray.forEach((cube) => {
-                                cube.updateVisibility();
-                            })
+        domEvents.addEventListener(this.mesh, 'mouseover', event => {
+            pickHelper = new PickHelper
+
+            pickPosition.x = (event.origDomEvent.clientX / canvas.clientWidth)  * 2 - 1;
+            pickPosition.y = (event.origDomEvent.clientY / canvas.clientHeight)  * -2 + 1;
+            pickedObj = pickHelper.pick(pickPosition, scene, camera);
+
+            if (pickedObj.geometry.cubeGL.hidden === true) pickedObj.material.color.setHex('0xFFFF00');
+
+            domEvents.addEventListener(this.mesh, 'mouseout', event => {
+                if (this.cubeGL.hidden === true) {
+                    this.material.color.setHex('0xD3D3D3');
+                    this.geometry.material.color.setHex('0xD3D3D3');
+                }
+            })
+
+            domEvents.addEventListener(this.mesh, 'mousedown', eventClick => {
+                pickedObj['eventClick'] = eventClick;
+
+                switch (pickedObj.eventClick.origDomEvent.button) {
+
+                    case 0:
+                        // console.log("left click")
+                        if (pickedObj.geometry.cubeGL.hidden === 'flagged') {
+                            // do nothing
                         } else {
-                            // commented out for code snippet
-                        }
-                    }
+                            pickedObj.geometry.cubeGL.hidden === false;
+                            
+                            g.makeMove(pickedObj.geometry.cubeGL.row, pickedObj.geometry.cubeGL.col, pickedObj.geometry.cubeGL.plane);
 
-                    break;
+                            if (pickedObj.geometry.cubeGL.value === 'Mine') {
+                                // removed for code snippet
+                            } else if (pickedObj.geometry.cubeGL.value === 'vac') { 
+                                // removed for code snippet
+                            }
+                            // removed for code snippet
+                        }
+
+                        break;
+                    case 2:
+                        // console.log("right click")
+                        // removed for code snippet
+                }
+            })
+        })
 ```
+This was difficult to debug, but turned into a good learning experience as I now understand Raycasting better after correcting the incorrect event behavior. 
+
 <h2>
 Game Logic: Data Structure & Recursion
 </h2>
