@@ -5,7 +5,7 @@ Technologies
 JavaScript, ThreeJS, ThreeJSx, CSS, HTML5
 
 <h1>
-Game Introduction and Pictures:
+Game Introduction and Pictures
 </h1>
 
 ![GameIntro](assets/game_intro1.png)
@@ -34,11 +34,9 @@ Code Snippets
 User Interface: Raycasting & Enclosure of pickedObj & Nesting of EventListeners
 </h2>
 
-Because I was developing in 3D, I had issues with user interface because event listeners click and hover would select cubes directly behind the initially selected cube. This would be a frustrating experience for the player because the player would activate cubes unintentionally. The solution was adding Raycasting. Raycasting creates an instance of a ray/line through the 3D scene with two input coordinates: camera position (x1,y1,z1) and cube position (x2,y2,z2). Any intersected object from the ray would be pushed to an array. For my game, I only needed to identify the first cube, so I key into the first element of the array. Implementing Raycasting is provided by the ThreeJS tutorial documents. However, in order to use Raycasting effectively for my project, I needed to tinker with my code. 
+Because of the nature of working in 3D, I experienced problems with user interface because event listeners click and hover would activate cubes directly behind the  selected cube. This would be a frustrating experience for the player because the player would activate cubes unintentionally. The solution was implementing Raycasting. Raycasting creates an instance of a ray/line through the 3D scene. It takes two input coordinates: camera position (x1,y1,z1) and cube position (x2,y2,z2). Any intersected object from the ray would be pushed to an array. For my game, I only needed to first element of the array to identify the first cube intersected. Implementing Raycasting is aleady provided by the ThreeJS tutorial documents. However in order to use Raycasting effectively for my project, I needed to make more changes to my code. Because the pickedObj from the ray instances did not have the texture/material/mesh attributes, I was not able to change the cube's appearance upon an event. Initially, I attempted to pass down the cube object into the ray instance. The passing down means I assigned a key-value pair in the ray instance. This did not work, because while the ray instance correctly identifed the 1st cube, the passed-down cube was from the cube coordinates that the ray instance takes as input. For example, if I hovered over 2 cubes, then two ray instances are created. Both ray correctly identifies the first cube, but I was wrongly updating the texture/material/mesh appearance on the passed-down cube.
 
-Because the pickedObj from the ray instances did not have the texture/material/mesh attributes, I was not able to change the cube's appearance upon a event action. Initially, I failed-attempted to pass down the cube object into the ray instance. The passing down means I assigned a key-value pair in the ray instance. This did not work, because while the ray instance correctly identifed the 1st cube, the passed-down cube was from the cube coordinates that the ray takes in as input. For example, if I hovered over 2 cubes, then two ray instances are created. Both ray rays correctly identify the first cube, but I would update the texture/material/mesh appearance of the the passed-down cube instead. 
-
-After realizing my initial mistakes, my second attempt to fix the issue by enclosing the variable pickedObj and nesting event listeners mouseover, mouseout, and mousdown was successful. I am still passing down the cubeGL, mesh and material in this.geometry, which is accessible in the ray instance POJO. I declare and define the pickedObj variable in the mouseover event. When clicking on the object, I enclose the pickedObj in the nested event listeners. Note that the mouseout is intentionally set to "this" because I want all hovered cube's appearances reset to default settings.
+My solution required enclosing the variable pickedObj in nested event listeners mouseover, mouseout, and mousdown. I am still passing down the cubeGL, mesh and material in this.geometry, which is accessible in the ray instance POJO. I declare and define the pickedObj variable in the mouseover event. The nested click event uses the enclosed pickedObj. Note that the mouseout is intentionally set to "this" because I want all hovered cube's appearances reset to default settings. The following snippet is a redacted versino of my CubeUI class:
 
 ```
 class CubeUI {
@@ -109,13 +107,13 @@ class CubeUI {
             })
         })
 ```
-This was difficult to debug, but turned into a good learning experience as I now understand Raycasting better after correcting the incorrect event behavior. 
+This was a difficult experience to debug, but was a valuable learning experience  as I now understand Raycasting and fundamental programming concepts of references and pointers better. 
 
 <h2>
 Game Logic: Data Structure & Recursion
 </h2>
 
- In regular minesweeper, when the player selects a vacant square, the selection reveals all neighboring squares with values either vacant or the count of neighboring bombs. Each instance of cube has an attribute neighbors, which is an object that points to its neighboring cubes. This demonstrates the use of the graph data structure. 
+In minesweeper, when the player selects a vacant square, the selection reveals all neighboring squares with values either vacant or the count of neighboring bombs. In my game, each instance of a cube has an attribute neighbors, which is an object that points to its neighboring cubes. This organization demonstrates the use of a graph data structure. This following snippet is a redacted version of my Plane class:
  
  ```
     setNeighbors(plane, idx) {
@@ -165,7 +163,7 @@ Game Logic: Data Structure & Recursion
     }
 ```
 
-With the graph data structure, I created the recursive search algorithm to identify neighboring vacant cubes. 
+With the neighbors attribute assigned for all cube instances, I created the recursive search algorithm to identify neighboring vacant cubes. The following snippet is a redacted version of my Game class. 
 
 ```
     revealVacs(row, col, idx, vacSet) {
