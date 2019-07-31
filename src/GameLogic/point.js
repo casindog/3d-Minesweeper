@@ -5,6 +5,7 @@ class Point {
         this.value = value;
         this.hidden = true;
         this.neighbors;
+        this.updated = false;
     }
 
 }

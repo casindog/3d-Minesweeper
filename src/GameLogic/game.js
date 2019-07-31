@@ -187,6 +187,8 @@ class Game {
 
                 vacSet.forEach((point) => {
                     point.hidden = false;
+                    // this is for the revealed vac cubes
+                    point.updated = 'UPDATEME';
 
                     let neighborsUpPlane = Object.values(point.neighbors.upPlane);
                     let neighborsSamePlane = Object.values(point.neighbors.samePlane);
