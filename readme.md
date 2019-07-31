@@ -8,22 +8,21 @@ JavaScript, ThreeJS, ThreeJSx, CSS, HTML5
 Game Introduction and Pictures:
 </h1>
 
-![GameIntro](assets/game_intro.png)
+![GameIntro](assets/game_intro1.png)
  
 Let us take a look at the yellow highlighted cubes in the following pictures. Both are taken from a top-down view. 
 
-1. In 2D minesweeper, the cube has only 1 plane. Therefore, the cube's neighbors are only the cubes next to it: left, right and diagonal.
+1. In 2D minesweeper, the game has only one plane. Therefore, the yellow cube's neighbors are the cubes next to it: left, right and diagonal.
 
 ![Example1](assets/example1.png)
 
-The maximum number of neighbors in 2D is 8. 
+The maximum number of neighbors with one plane is 8. 
 
-2. In 3D minesweeper, the cube's neighbors also have to consider the neighbors on planes above and below itself. This example only demonstrates neighbors on the plane above it since the yellow cube has no plane below it. 
+2. In 3D minesweeper, the cube's neighbors include the cubes on both the planes above and below itself. This example only demonstrates neighbors on the plane above since the yellow cube has no plane below. 
 
 ![Example2](assets/example2.png)
 
 The maximum number of neighbors in 3D is 26: 9 cubes on the plane below, 8 cubes on the same plane, 9 cubes on the plane above. 
-
 
 Have Fun!
 
