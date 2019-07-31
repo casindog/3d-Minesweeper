@@ -30,9 +30,9 @@ Have Fun!
 Code Snippets
 </h1>
 
-<h2>
+<h3>
 User Interface: Raycasting & Enclosure of pickedObj & Nesting of EventListeners
-</h2>
+</h3>
 
 Because of the nature of working in 3D, I experienced problems with user interface because event listeners click and hover would activate cubes directly behind the  selected cube. This would be a frustrating experience for the player because the player would activate cubes unintentionally. The solution was implementing Raycasting. Raycasting creates an instance of a ray/line through the 3D scene. It takes two input coordinates: camera position (x1,y1,z1) and cube position (x2,y2,z2). Any intersected object from the ray would be pushed to an array. For my game, I only needed to first element of the array to identify the first cube intersected. Implementing Raycasting is aleady provided by the ThreeJS tutorial documents. However in order to use Raycasting effectively for my project, I needed to make more changes to my code. Because the pickedObj from the ray instances did not have the texture/material/mesh attributes, I was not able to change the cube's appearance upon an event. Initially, I attempted to pass down the cube object into the ray instance. The passing down means I assigned a key-value pair in the ray instance. This did not work, because while the ray instance correctly identifed the 1st cube, the passed-down cube was from the cube coordinates that the ray instance takes as input. For example, if I hovered over 2 cubes, then two ray instances are created. Both ray correctly identifies the first cube, but I was wrongly updating the texture/material/mesh appearance on the passed-down cube.
 
@@ -109,9 +109,9 @@ class CubeUI {
 ```
 This was a difficult experience to debug, but was a valuable learning experience  as I now understand Raycasting and fundamental programming concepts of references and pointers better. 
 
-<h2>
+<h3>
 Game Logic: Data Structure & Recursion
-</h2>
+</h3>
 
 In minesweeper, when the player selects a vacant square, the selection reveals all neighboring squares with values either vacant or the count of neighboring bombs. In my game, each instance of a cube has an attribute neighbors, which is an object that points to its neighboring cubes. This organization demonstrates the use of a graph data structure. This following snippet is a redacted version of my Plane class:
  
