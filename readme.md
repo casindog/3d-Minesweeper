@@ -20,13 +20,11 @@ Let us take a look at the yellow highlighted cubes in the following pictures.
 
 The maximum number of neighbors with one plane is 8. 
 
-2. In 3D minesweeper, the cube's neighbors include the cubes on both the planes above and below itself. This example only demonstrates neighbors on the plane above since the yellow cube has no plane below. 
+2. In 3D minesweeper, the cube's neighbors include the cubes on both the planes above and below itself. This example only demonstrates neighbors on the plane above since the yellow cube has no plane below. Therefore, the yellow cube's neighbors are same-plane(left, right, diagonal) and top-plane(directly-above, left, right, diagonal).
 
 ![Example2](assets/example2.png)
 
 The maximum number of neighbors in 3D is 26: 9 cubes on the plane below, 8 cubes on the same plane, 9 cubes on the plane above. 
-
-Have Fun!
 
 <h1>
 Code Snippets
@@ -203,3 +201,7 @@ With the neighbors attribute assigned for all cube instances, I created the recu
         })
     }
 ```
+
+<h2>
+Thanks for visiting my project and have fun playing my game!
+ </h2>
