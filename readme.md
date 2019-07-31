@@ -38,7 +38,7 @@ Because of the nature of working in 3D, I experienced problems with user interfa
 
 My solution required enclosing the variable pickedObj in nested event listeners mouseover, mouseout, and mousdown. I am still passing down the cubeGL, mesh and material in this.geometry, which is accessible in the ray instance. I declare and define the pickedObj variable in the mouseover event. The nested click event uses the enclosed pickedObj. Note that the mouseout is intentionally set to "this" because I want all hovered cube's appearances reset to default settings. The following snippet is a redacted versino of my CubeUI class:
 
-```
+``` javascript
 class CubeUI {
     constructor(x,y,z) {
         this.cubeGL = g.planes[z+1].grid[x+1][y+1];
@@ -115,7 +115,7 @@ Game Logic: Data Structure & Recursion
 
 In minesweeper, when the player selects a vacant square, the selection reveals all neighboring squares with values either vacant or the count of neighboring bombs. In my game, each instance of a cube has an attribute neighbors, which is an object that points to its neighboring cubes. This organization demonstrates the use of a graph data structure. This following snippet is a redacted version of my Plane class:
  
- ```
+ ``` javascript
     setNeighbors(plane, idx) {
         let neighbors;
         
@@ -165,7 +165,7 @@ In minesweeper, when the player selects a vacant square, the selection reveals a
 
 With the neighbors attribute assigned for all cube instances, I created the recursive search algorithm to identify neighboring vacant cubes. The following snippet is a redacted version of my Game class. 
 
-```
+``` javascript
     revealVacs(row, col, idx, vacSet) {
         let neighbors = this.planes[idx].grid[row][col].neighbors;
 
