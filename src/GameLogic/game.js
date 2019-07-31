@@ -245,7 +245,6 @@ class Game {
                 this.revealVacs(neighbor.row, neighbor.col, idx+1, vacSet);
             }
         })
-
     }
 
     reset() {

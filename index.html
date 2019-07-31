@@ -187,7 +187,6 @@
                         pickPosition.x = (event.origDomEvent.clientX / canvas.clientWidth)  * 2 - 1;
                         pickPosition.y = (event.origDomEvent.clientY / canvas.clientHeight)  * -2 + 1;
                         pickedObj = pickHelper.pick(pickPosition, scene, camera);
-                        // console.log(pickedObj)
 
                         if (pickedObj.geometry.cubeGL.hidden === true) pickedObj.material.color.setHex('0xFFFF00');
 
@@ -202,7 +201,6 @@
 
                         domEvents.addEventListener(this.mesh, 'mousedown', eventClick => {
                             pickedObj['eventClick'] = eventClick;
-                            
 
                             switch (pickedObj.eventClick.origDomEvent.button) {
 
@@ -269,7 +267,6 @@
                                     break;
                             }
                         })
-
                     })
 
                 }
