@@ -1,6 +1,6 @@
-<h1>
+
 [Play 3D MineSweeper!](https://casindog.github.io/3d-Minesweeper/)
-</h1>
+
 
 <h1>
 Technologies
